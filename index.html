@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free house affordability calculator. Find out if you can afford that house instantly - no email required. Calculate your mortgage payment and debt-to-income ratio.">
+    <meta name="keywords" content="house affordability calculator, mortgage calculator, can I afford this house, home buying calculator, mortgage payment calculator">
+    <title>Can I Afford This House? - Free Calculator | No Email Required</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Can I Afford This House? - Free Calculator">
+    <meta property="og:description" content="Find out if you can afford that house instantly. Free calculator with no email required.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nyanguno.github.io/caniaffordthishouse">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Can I Afford This House? Calculator",
+        "description": "Free house affordability calculator. Find out if you can afford that house instantly - no email required.",
+        "url": "https://nyanguno.github.io/caniaffordthishouse",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "House affordability calculation",
+            "Mortgage payment estimation",
+            "Debt-to-income ratio analysis",
+            "Credit score based interest rates",
+            "No email required",
+            "Mobile friendly"
+        ],
+        "author": {
+            "@type": "Organization",
+            "name": "Can I Afford This House"
+        }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Is the 28% rule always accurate?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The 28% rule is a conservative guideline used by most lenders. Some people can comfortably afford more, while others should aim for less depending on their other debts, lifestyle, and financial goals."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What if I have other debts?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Lenders also look at your total debt-to-income ratio (including credit cards, car loans, etc.), which should typically be below 36-43%. If you have significant other debts, you may need to aim for a lower housing payment."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How accurate are the interest rates?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We use estimated rates based on typical ranges for different credit scores. Actual rates vary by lender, loan type, and market conditions. Always get pre-approved for the most accurate rate."
+                }
+            }
+        ]
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .hero .subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 1rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 32px;
+            padding: 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result.success {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+        
+        .result.warning {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+        }
+        
+        .result.danger {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .result-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .payment-breakdown {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .payment-breakdown h4 {
+            margin-bottom: 12px;
+            color: #374151;
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+        
+        .payment-item.total {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .info-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        
+        .info-section h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .info-section p {
+            margin-bottom: 16px;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+        
+        .faq {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        
+        .faq h2 {
+            color: #1f2937;
+            margin-bottom: 24px;
+            font-size: 1.8rem;
+        }
+        
+        .faq-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .faq-item h3 {
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+        
+        .faq-item p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .calculator-card,
+            .info-section,
+            .faq {
+                padding: 24px;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .calculator-card,
+            .info-section,
+            .faq {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Can I Afford This House?</h1>
+            <p>Get an instant answer to your biggest question</p>
+            <p class="subtitle">No email required • 100% free • Takes 30 seconds</p>
+        </div>
+        
+        <div class="calculator-card">
+            <form id="affordabilityForm">
+                <div class="form-group">
+                    <label for="housePrice">House Price ($)</label>
+                    <input type="number" id="housePrice" placeholder="e.g. 350,000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="annualIncome">Annual Income ($)</label>
+                    <input type="number" id="annualIncome" placeholder="e.g. 70,000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="downPayment">Down Payment ($)</label>
+                    <input type="number" id="downPayment" placeholder="e.g. 50,000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="creditScore">Credit Score (600-850)</label>
+                    <input type="number" id="creditScore" placeholder="e.g. 720" min="600" max="850" required>
+                </div>
+                
+                <button type="submit" class="calculate-btn">Calculate Affordability</button>
+            </form>
+            
+            <div id="result" class="result"></div>
+        </div>
+        
+        <div class="info-section">
+            <h2>How Does This Calculator Work?</h2>
+            <p>Our calculator uses the <strong>28% rule</strong> - a widely accepted guideline that suggests your monthly housing payment should not exceed 28% of your gross monthly income.</p>
+            <p>We calculate your estimated monthly mortgage payment based on current interest rates (which vary by credit score), add estimated property taxes and insurance, then compare this to 28% of your monthly income.</p>
+            <p>This gives you a realistic picture of whether you can comfortably afford the house you're considering, helping you make informed decisions about one of life's biggest purchases.</p>
+        </div>
+        
+        <div class="faq">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <h3>Is the 28% rule always accurate?</h3>
+                <p>The 28% rule is a conservative guideline used by most lenders. Some people can comfortably afford more, while others should aim for less depending on their other debts, lifestyle, and financial goals.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>What if I have other debts?</h3>
+                <p>Lenders also look at your total debt-to-income ratio (including credit cards, car loans, etc.), which should typically be below 36-43%. If you have significant other debts, you may need to aim for a lower housing payment.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>How accurate are the interest rates?</h3>
+                <p>We use estimated rates based on typical ranges for different credit scores. Actual rates vary by lender, loan type, and market conditions. Always get pre-approved for the most accurate rate.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Should I include HOA fees?</h3>
+                <p>Yes! If the property has HOA fees, add them to your estimated monthly payment when considering affordability. Our calculator includes basic property taxes and insurance estimates.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Can I Afford This House? | Free House Affordability Calculator</p>
+    </div>
+    
+    <script>
+        document.getElementById('affordabilityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateAffordability();
+        });
+        
+        function calculateAffordability() {
+            // Get input values
+            const housePrice = parseFloat(document.getElementById('housePrice').value);
+            const annualIncome = parseFloat(document.getElementById('annualIncome').value);
+            const downPayment = parseFloat(document.getElementById('downPayment').value);
+            const creditScore = parseInt(document.getElementById('creditScore').value);
+            
+            // Validate inputs
+            if (!housePrice || !annualIncome || !downPayment || !creditScore) {
+                showResult('Please fill in all fields.', 'warning', '⚠️');
+                return;
+            }
+            
+            if (downPayment >= housePrice) {
+                showResult('Down payment cannot be greater than or equal to house price.', 'warning', '⚠️');
+                return;
+            }
+            
+            if (creditScore < 600 || creditScore > 850) {
+                showResult('Please enter a credit score between 600 and 850.', 'warning', '⚠️');
+                return;
+            }
+            
+            // Calculate loan amount
+            const loanAmount = housePrice - downPayment;
+            
+            // Determine interest rate based on credit score
+            let interestRate;
+            if (creditScore >= 760) {
+                interestRate = 6.5;
+            } else if (creditScore >= 700) {
+                interestRate = 7.0;
+            } else if (creditScore >= 650) {
+                interestRate = 7.8;
+            } else {
+                interestRate = 8.5;
+            }
+            
+            // Calculate monthly mortgage payment
+            const monthlyRate = interestRate / 100 / 12;
+            const numberOfPayments = 30 * 12; // 30 years
+            const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+            
+            // Estimate property taxes and insurance
+            const monthlyPropertyTax = (housePrice * 0.012) / 12; // 1.2% annually
+            const monthlyInsurance = (housePrice * 0.003) / 12; // 0.3% annually
+            
+            // Total monthly payment
+            const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance;
+            
+            // Calculate 28% of monthly income
+            const monthlyIncome = annualIncome / 12;
+            const maxAffordablePayment = monthlyIncome * 0.28;
+            
+            // Calculate debt-to-income ratio
+            const debtToIncomeRatio = (totalMonthlyPayment / monthlyIncome) * 100;
+            
+            // Determine affordability
+            let resultClass, resultIcon, resultMessage;
+            
+            if (totalMonthlyPayment <= maxAffordablePayment) {
+                resultClass = 'success';
+                resultIcon = '✅';
+                resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}).`;
+            } else if (totalMonthlyPayment <= maxAffordablePayment * 1.15) {
+                resultClass = 'warning';
+                resultIcon = '⚠️';
+                resultMessage = `<strong>This house is borderline affordable.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} exceeds the recommended 28% rule (max: $${maxAffordablePayment.toFixed(2)}). Consider improving your credit score or saving a larger down payment.`;
+            } else {
+                resultClass = 'danger';
+                resultIcon = '❌';
+                resultMessage = `<strong>This house is likely out of your budget.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} significantly exceeds the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}). Consider a less expensive home or increasing your income.`;
+            }
+            
+            // Create payment breakdown
+            const breakdown = `
+                <div class="payment-breakdown">
+                    <h4>Monthly Payment Breakdown:</h4>
+                    <div class="payment-item">
+                        <span>Mortgage Payment:</span>
+                        <span>$${monthlyMortgage.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Property Taxes (est.):</span>
+                        <span>$${monthlyPropertyTax.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Insurance (est.):</span>
+                        <span>$${monthlyInsurance.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item total">
+                        <span>Total Monthly Payment:</span>
+                        <span>$${totalMonthlyPayment.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Your Max Recommended:</span>
+                        <span>$${maxAffordablePayment.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Debt-to-Income Ratio:</span>
+                        <span>${debtToIncomeRatio.toFixed(1)}%</span>
+                    </div>
+                </div>
+            `;
+            
+            showResult(resultMessage + breakdown, resultClass, resultIcon);
+        }
+        
+        function showResult(message, className, icon) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<span class="result-icon">${icon}</span>${message}`;
+            resultDiv.className = `result ${className}`;
+            resultDiv.style.display = 'block';
+            
+            // Smooth scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Add number formatting to inputs
+        document.getElementById('housePrice').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
+        document.getElementById('annualIncome').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
+        document.getElementById('downPayment').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
+        function formatNumberInput(input) {
+            // Remove any non-digit characters except decimal point
+            let value = input.value.replace(/[^\d.]/g, '');
+            
+            // Ensure only one decimal point
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            
+            input.value = value;
+        }
+    </script>
+</body>
+</html>
+
