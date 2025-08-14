@@ -97,7 +97,5 @@ The site is optimized for these high-traffic keywords:
 
 Free to use and modify. No attribution required.
 
-## Support
 
-For questions or issues, create an issue in the GitHub repository.
 
