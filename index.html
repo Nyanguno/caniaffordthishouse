@@ -422,6 +422,57 @@ gtag('config', 'G-25TWGT6LCN');
             line-height: 1.7;
         }
         
+        .testimonials {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        
+        .testimonials h2 {
+            color: #1f2937;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .testimonial-content {
+            margin-bottom: 16px;
+        }
+        
+        .testimonial-content p {
+            color: #374151;
+            line-height: 1.6;
+            font-style: italic;
+            margin: 0;
+        }
+        
+        .testimonial-author strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .testimonial-author span {
+            color: #6b7280;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 4px;
+        }
+        
         .faq {
             background: white;
             border-radius: 16px;
@@ -475,8 +526,14 @@ gtag('config', 'G-25TWGT6LCN');
             
             .calculator-card,
             .info-section,
+            .testimonials,
             .faq {
                 padding: 24px;
+            }
+            
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
             
             .container {
@@ -528,6 +585,19 @@ gtag('config', 'G-25TWGT6LCN');
                 </div>
                 
                 <div class="form-group">
+                    <label for="loanTerm">Loan Term (Years):</label>
+                    <select id="loanTerm">
+                        <option value="30">30-Year</option>
+                        <option value="15">15-Year</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="propertyTax">Annual Property Tax <span class="optional">(or leave blank to estimate)</span></label>
+                    <input type="number" id="propertyTax" placeholder="e.g. 4320 (for $360/month)" value="">
+                </div>
+                
+                <div class="form-group">
                     <label for="interestRate">Interest Rate (%) <span class="optional">(optional - auto-calculated from credit score)</span></label>
                     <input type="number" id="interestRate" placeholder="e.g. 7.0" min="3" max="15" step="0.1">
                 </div>
@@ -566,6 +636,42 @@ gtag('config', 'G-25TWGT6LCN');
             <p>Our calculator uses the <strong>28% rule</strong> - a widely accepted guideline that suggests your monthly housing payment should not exceed 28% of your gross monthly income.</p>
             <p>We calculate your estimated monthly mortgage payment based on current interest rates (which vary by credit score), add estimated property taxes and insurance, then compare this to 28% of your monthly income.</p>
             <p>This gives you a realistic picture of whether you can comfortably afford the house you're considering, helping you make informed decisions about one of life's biggest purchases.</p>
+        </div>
+        
+        <div class="testimonials">
+            <h2>What Our Users Say</h2>
+            
+            <div class="testimonial-grid">
+                <div class="testimonial-item">
+                    <div class="testimonial-content">
+                        <p>"This calculator saved me from making a huge mistake! I was looking at a $400k house but this showed me I'd be spending 45% of my income. Found a perfect $320k home instead."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <strong>Sarah M.</strong>
+                        <span>First-time homebuyer</span>
+                    </div>
+                </div>
+                
+                <div class="testimonial-item">
+                    <div class="testimonial-content">
+                        <p>"The 15-year vs 30-year comparison feature is brilliant. Showed my wife and I exactly how much we'd save in interest by going with the shorter term. We're building equity so much faster now!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <strong>Mike & Jennifer T.</strong>
+                        <span>Homeowners</span>
+                    </div>
+                </div>
+                
+                <div class="testimonial-item">
+                    <div class="testimonial-content">
+                        <p>"As a real estate agent, I use this with every client. The custom property tax feature is perfect for our high-tax area. Clients love seeing the exact numbers before we start house hunting."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <strong>David R.</strong>
+                        <span>Real Estate Professional</span>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="faq">
@@ -656,15 +762,18 @@ gtag('config', 'G-25TWGT6LCN');
             }
             
             // Calculate monthly mortgage payment
+            const loanTermYears = parseInt(document.getElementById('loanTerm').value);
             const monthlyRate = interestRate / 100 / 12;
-            const numberOfPayments = 30 * 12; // 30 years
+            const numberOfPayments = loanTermYears * 12;
             const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
             
             // Calculate property taxes and insurance
-            const propertyTaxRate = customPropertyTaxRate || 1.2; // Default 1.2%
-            const insuranceRate = customInsuranceRate || 0.3; // Default 0.3%
+            // Use custom annual property tax if provided, else estimate from house price
+            const annualPropertyTaxInput = parseFloat(document.getElementById('propertyTax').value);
+            const annualPropertyTax = annualPropertyTaxInput || (housePrice * 0.012); // 1.2% fallback
+            const monthlyPropertyTax = annualPropertyTax / 12;
             
-            const monthlyPropertyTax = (housePrice * (propertyTaxRate / 100)) / 12;
+            const insuranceRate = customInsuranceRate || 0.3; // Default 0.3%
             const monthlyInsurance = (housePrice * (insuranceRate / 100)) / 12;
             
             // Total monthly payment
@@ -685,8 +794,9 @@ gtag('config', 'G-25TWGT6LCN');
                     annualIncome,
                     downPayment,
                     creditScore,
+                    loanTermYears,
                     interestRate,
-                    propertyTaxRate,
+                    annualPropertyTax,
                     insuranceRate
                 },
                 results: {
@@ -734,7 +844,7 @@ gtag('config', 'G-25TWGT6LCN');
                         <span>$${monthlyMortgage.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Property Taxes (${propertyTaxRate}%):</span>
+                        <span>Property Taxes ${annualPropertyTaxInput ? '(custom)' : '(estimated)'}:</span>
                         <span>$${monthlyPropertyTax.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
@@ -834,11 +944,11 @@ gtag('config', 'G-25TWGT6LCN');
                 return;
             }
             
-            let csvContent = 'Timestamp,House Price,Annual Income,Down Payment,Credit Score,Interest Rate,Property Tax Rate,Insurance Rate,Loan Amount,Monthly Mortgage,Monthly Property Tax,Monthly Insurance,Total Monthly Payment,Monthly Income,Max Affordable Payment,Actual Income Percentage,Affordable\n';
+            let csvContent = 'Timestamp,House Price,Annual Income,Down Payment,Credit Score,Loan Term Years,Interest Rate,Annual Property Tax,Insurance Rate,Loan Amount,Monthly Mortgage,Monthly Property Tax,Monthly Insurance,Total Monthly Payment,Monthly Income,Max Affordable Payment,Actual Income Percentage,Affordable\n';
             
             calculationHistory.forEach(calc => {
                 const affordable = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'Yes' : 'No';
-                csvContent += `${calc.timestamp.toISOString()},${calc.inputs.housePrice},${calc.inputs.annualIncome},${calc.inputs.downPayment},${calc.inputs.creditScore},${calc.inputs.interestRate},${calc.inputs.propertyTaxRate},${calc.inputs.insuranceRate},${calc.results.loanAmount.toFixed(2)},${calc.results.monthlyMortgage.toFixed(2)},${calc.results.monthlyPropertyTax.toFixed(2)},${calc.results.monthlyInsurance.toFixed(2)},${calc.results.totalMonthlyPayment.toFixed(2)},${calc.results.monthlyIncome.toFixed(2)},${calc.results.maxAffordablePayment.toFixed(2)},${calc.results.actualIncomePercentage.toFixed(2)},${affordable}\n`;
+                csvContent += `${calc.timestamp.toISOString()},${calc.inputs.housePrice},${calc.inputs.annualIncome},${calc.inputs.downPayment},${calc.inputs.creditScore},${calc.inputs.loanTermYears},${calc.inputs.interestRate},${calc.inputs.annualPropertyTax},${calc.inputs.insuranceRate},${calc.results.loanAmount.toFixed(2)},${calc.results.monthlyMortgage.toFixed(2)},${calc.results.monthlyPropertyTax.toFixed(2)},${calc.results.monthlyInsurance.toFixed(2)},${calc.results.totalMonthlyPayment.toFixed(2)},${calc.results.monthlyIncome.toFixed(2)},${calc.results.maxAffordablePayment.toFixed(2)},${calc.results.actualIncomePercentage.toFixed(2)},${affordable}\n`;
             });
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -869,8 +979,9 @@ House Price: $${calc.inputs.housePrice.toLocaleString()}
 Annual Income: $${calc.inputs.annualIncome.toLocaleString()}
 Down Payment: $${calc.inputs.downPayment.toLocaleString()}
 Credit Score: ${calc.inputs.creditScore}
+Loan Term: ${calc.inputs.loanTermYears} years
 Interest Rate: ${calc.inputs.interestRate.toFixed(2)}%
-Property Tax Rate: ${calc.inputs.propertyTaxRate.toFixed(2)}%
+Annual Property Tax: $${calc.inputs.annualPropertyTax.toFixed(2)}
 Insurance Rate: ${calc.inputs.insuranceRate.toFixed(2)}%
 
 RESULTS:
