@@ -4,12 +4,11 @@
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-25TWGT6LCN"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
 
-  gtag('config', 'G-25TWGT6LCN');
-</script>
+gtag('config', 'G-25TWGT6LCN');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free house affordability calculator. Find out if you can afford that house instantly - no email required. Calculate your mortgage payment and debt-to-income ratio.">
@@ -172,6 +171,142 @@
             border-color: #667eea;
             background: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .optional {
+            font-weight: 400;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+        
+        .export-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .clear-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        .history-section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            display: none;
+        }
+        
+        .history-section.show {
+            display: block;
+        }
+        
+        .history-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .history-title {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .history-timestamp {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .history-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .history-stat {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .history-stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .history-stat-value {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .percentage-highlight {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        
+        .percentage-highlight.good {
+            color: #10b981;
+        }
+        
+        .percentage-highlight.warning {
+            color: #f59e0b;
+        }
+        
+        .percentage-highlight.danger {
+            color: #ef4444;
         }
         
         .calculate-btn {
@@ -392,10 +527,38 @@
                     <input type="number" id="creditScore" placeholder="e.g. 720" min="600" max="850" required>
                 </div>
                 
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%) <span class="optional">(optional - auto-calculated from credit score)</span></label>
+                    <input type="number" id="interestRate" placeholder="e.g. 7.0" min="3" max="15" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="propertyTaxRate">Property Tax Rate (%) <span class="optional">(optional - default 1.2%)</span></label>
+                    <input type="number" id="propertyTaxRate" placeholder="e.g. 1.2" min="0" max="5" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="insuranceRate">Insurance Rate (%) <span class="optional">(optional - default 0.3%)</span></label>
+                    <input type="number" id="insuranceRate" placeholder="e.g. 0.3" min="0" max="2" step="0.1">
+                </div>
+                
                 <button type="submit" class="calculate-btn">Calculate Affordability</button>
             </form>
             
             <div id="result" class="result"></div>
+            
+            <div class="button-group" id="exportButtons" style="display: none;">
+                <button type="button" class="export-btn" onclick="exportToCSV()">Export CSV</button>
+                <button type="button" class="export-btn" onclick="exportToText()">Copy Results</button>
+                <button type="button" class="clear-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+        </div>
+        
+        <div class="history-section" id="historySection">
+            <h2>Calculation History</h2>
+            <div id="historyContainer">
+                <p style="text-align: center; color: #6b7280;">No calculations yet. Run a calculation to see your history here.</p>
+            </div>
         </div>
         
         <div class="info-section">
@@ -431,10 +594,14 @@
     </div>
     
     <div class="footer">
-        <p>&copy; 2025 Can I Afford This House? | Free House Affordability Calculator</p>
+        <p>&copy; 2024 Can I Afford This House? | Free House Affordability Calculator</p>
     </div>
     
     <script>
+        // Global variables for calculation history
+        let calculationHistory = [];
+        let currentCalculation = null;
+        
         document.getElementById('affordabilityForm').addEventListener('submit', function(e) {
             e.preventDefault();
             calculateAffordability();
@@ -447,9 +614,14 @@
             const downPayment = parseFloat(document.getElementById('downPayment').value);
             const creditScore = parseInt(document.getElementById('creditScore').value);
             
-            // Validate inputs
+            // Get optional inputs with defaults
+            const customInterestRate = parseFloat(document.getElementById('interestRate').value);
+            const customPropertyTaxRate = parseFloat(document.getElementById('propertyTaxRate').value);
+            const customInsuranceRate = parseFloat(document.getElementById('insuranceRate').value);
+            
+            // Validate required inputs
             if (!housePrice || !annualIncome || !downPayment || !creditScore) {
-                showResult('Please fill in all fields.', 'warning', '⚠️');
+                showResult('Please fill in all required fields.', 'warning', '⚠️');
                 return;
             }
             
@@ -466,16 +638,21 @@
             // Calculate loan amount
             const loanAmount = housePrice - downPayment;
             
-            // Determine interest rate based on credit score
+            // Determine interest rate
             let interestRate;
-            if (creditScore >= 760) {
-                interestRate = 6.5;
-            } else if (creditScore >= 700) {
-                interestRate = 7.0;
-            } else if (creditScore >= 650) {
-                interestRate = 7.8;
+            if (customInterestRate && customInterestRate > 0) {
+                interestRate = customInterestRate;
             } else {
-                interestRate = 8.5;
+                // Auto-calculate based on credit score
+                if (creditScore >= 760) {
+                    interestRate = 6.5;
+                } else if (creditScore >= 700) {
+                    interestRate = 7.0;
+                } else if (creditScore >= 650) {
+                    interestRate = 7.8;
+                } else {
+                    interestRate = 8.5;
+                }
             }
             
             // Calculate monthly mortgage payment
@@ -483,9 +660,12 @@
             const numberOfPayments = 30 * 12; // 30 years
             const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
             
-            // Estimate property taxes and insurance
-            const monthlyPropertyTax = (housePrice * 0.012) / 12; // 1.2% annually
-            const monthlyInsurance = (housePrice * 0.003) / 12; // 0.3% annually
+            // Calculate property taxes and insurance
+            const propertyTaxRate = customPropertyTaxRate || 1.2; // Default 1.2%
+            const insuranceRate = customInsuranceRate || 0.3; // Default 0.3%
+            
+            const monthlyPropertyTax = (housePrice * (propertyTaxRate / 100)) / 12;
+            const monthlyInsurance = (housePrice * (insuranceRate / 100)) / 12;
             
             // Total monthly payment
             const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance;
@@ -494,8 +674,32 @@
             const monthlyIncome = annualIncome / 12;
             const maxAffordablePayment = monthlyIncome * 0.28;
             
-            // Calculate debt-to-income ratio
-            const debtToIncomeRatio = (totalMonthlyPayment / monthlyIncome) * 100;
+            // Calculate actual percentage of income used
+            const actualIncomePercentage = (totalMonthlyPayment / monthlyIncome) * 100;
+            
+            // Create calculation object
+            currentCalculation = {
+                timestamp: new Date(),
+                inputs: {
+                    housePrice,
+                    annualIncome,
+                    downPayment,
+                    creditScore,
+                    interestRate,
+                    propertyTaxRate,
+                    insuranceRate
+                },
+                results: {
+                    loanAmount,
+                    monthlyMortgage,
+                    monthlyPropertyTax,
+                    monthlyInsurance,
+                    totalMonthlyPayment,
+                    monthlyIncome,
+                    maxAffordablePayment,
+                    actualIncomePercentage
+                }
+            };
             
             // Determine affordability
             let resultClass, resultIcon, resultMessage;
@@ -503,16 +707,23 @@
             if (totalMonthlyPayment <= maxAffordablePayment) {
                 resultClass = 'success';
                 resultIcon = '✅';
-                resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}).`;
+                resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your income.`;
             } else if (totalMonthlyPayment <= maxAffordablePayment * 1.15) {
                 resultClass = 'warning';
                 resultIcon = '⚠️';
-                resultMessage = `<strong>This house is borderline affordable.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} exceeds the recommended 28% rule (max: $${maxAffordablePayment.toFixed(2)}). Consider improving your credit score or saving a larger down payment.`;
+                resultMessage = `<strong>This house is borderline affordable.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} exceeds the recommended 28% rule. Consider improving your credit score or saving a larger down payment.`;
             } else {
                 resultClass = 'danger';
                 resultIcon = '❌';
-                resultMessage = `<strong>This house is likely out of your budget.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} significantly exceeds the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}). Consider a less expensive home or increasing your income.`;
+                resultMessage = `<strong>This house is likely out of your budget.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} significantly exceeds the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}).`;
             }
+            
+            // Add percentage highlight
+            let percentageClass = 'good';
+            if (actualIncomePercentage > 28) percentageClass = 'warning';
+            if (actualIncomePercentage > 35) percentageClass = 'danger';
+            
+            const percentageHighlight = `<div class="percentage-highlight ${percentageClass}">Your payment is ${actualIncomePercentage.toFixed(1)}% of your income</div>`;
             
             // Create payment breakdown
             const breakdown = `
@@ -523,11 +734,11 @@
                         <span>$${monthlyMortgage.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Property Taxes (est.):</span>
+                        <span>Property Taxes (${propertyTaxRate}%):</span>
                         <span>$${monthlyPropertyTax.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Insurance (est.):</span>
+                        <span>Insurance (${insuranceRate}%):</span>
                         <span>$${monthlyInsurance.toFixed(2)}</span>
                     </div>
                     <div class="payment-item total">
@@ -535,17 +746,22 @@
                         <span>$${totalMonthlyPayment.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Your Max Recommended:</span>
+                        <span>Your Max Recommended (28%):</span>
                         <span>$${maxAffordablePayment.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Debt-to-Income Ratio:</span>
-                        <span>${debtToIncomeRatio.toFixed(1)}%</span>
+                        <span>Interest Rate Used:</span>
+                        <span>${interestRate.toFixed(2)}%</span>
                     </div>
                 </div>
+                ${percentageHighlight}
             `;
             
             showResult(resultMessage + breakdown, resultClass, resultIcon);
+            
+            // Add to history and show export buttons
+            addToHistory(currentCalculation);
+            document.getElementById('exportButtons').style.display = 'flex';
         }
         
         function showResult(message, className, icon) {
@@ -556,6 +772,140 @@
             
             // Smooth scroll to result
             resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function addToHistory(calculation) {
+            calculationHistory.unshift(calculation); // Add to beginning of array
+            updateHistoryDisplay();
+        }
+        
+        function updateHistoryDisplay() {
+            const historyContainer = document.getElementById('historyContainer');
+            const historySection = document.getElementById('historySection');
+            
+            if (calculationHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: #6b7280;">No calculations yet. Run a calculation to see your history here.</p>';
+                historySection.classList.remove('show');
+                return;
+            }
+            
+            historySection.classList.add('show');
+            
+            let historyHTML = '';
+            calculationHistory.forEach((calc, index) => {
+                const timestamp = calc.timestamp.toLocaleString();
+                const affordability = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'Affordable' : 'Over Budget';
+                const affordabilityClass = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'good' : 'danger';
+                
+                historyHTML += `
+                    <div class="history-item">
+                        <div class="history-header">
+                            <div class="history-title">$${calc.inputs.housePrice.toLocaleString()} House</div>
+                            <div class="history-timestamp">${timestamp}</div>
+                        </div>
+                        <div class="history-summary">
+                            <div class="history-stat">
+                                <div class="history-stat-label">Monthly Payment</div>
+                                <div class="history-stat-value">$${calc.results.totalMonthlyPayment.toFixed(2)}</div>
+                            </div>
+                            <div class="history-stat">
+                                <div class="history-stat-label">% of Income</div>
+                                <div class="history-stat-value">${calc.results.actualIncomePercentage.toFixed(1)}%</div>
+                            </div>
+                            <div class="history-stat">
+                                <div class="history-stat-label">Interest Rate</div>
+                                <div class="history-stat-value">${calc.inputs.interestRate.toFixed(2)}%</div>
+                            </div>
+                            <div class="history-stat">
+                                <div class="history-stat-label">Affordability</div>
+                                <div class="history-stat-value ${affordabilityClass}">${affordability}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            historyContainer.innerHTML = historyHTML;
+        }
+        
+        function exportToCSV() {
+            if (calculationHistory.length === 0) {
+                alert('No calculations to export. Run a calculation first.');
+                return;
+            }
+            
+            let csvContent = 'Timestamp,House Price,Annual Income,Down Payment,Credit Score,Interest Rate,Property Tax Rate,Insurance Rate,Loan Amount,Monthly Mortgage,Monthly Property Tax,Monthly Insurance,Total Monthly Payment,Monthly Income,Max Affordable Payment,Actual Income Percentage,Affordable\n';
+            
+            calculationHistory.forEach(calc => {
+                const affordable = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'Yes' : 'No';
+                csvContent += `${calc.timestamp.toISOString()},${calc.inputs.housePrice},${calc.inputs.annualIncome},${calc.inputs.downPayment},${calc.inputs.creditScore},${calc.inputs.interestRate},${calc.inputs.propertyTaxRate},${calc.inputs.insuranceRate},${calc.results.loanAmount.toFixed(2)},${calc.results.monthlyMortgage.toFixed(2)},${calc.results.monthlyPropertyTax.toFixed(2)},${calc.results.monthlyInsurance.toFixed(2)},${calc.results.totalMonthlyPayment.toFixed(2)},${calc.results.monthlyIncome.toFixed(2)},${calc.results.maxAffordablePayment.toFixed(2)},${calc.results.actualIncomePercentage.toFixed(2)},${affordable}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'house_affordability_calculations.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function exportToText() {
+            if (!currentCalculation) {
+                alert('No current calculation to copy. Run a calculation first.');
+                return;
+            }
+            
+            const calc = currentCalculation;
+            const affordable = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'Yes' : 'No';
+            
+            const textContent = `House Affordability Calculation Results
+Generated: ${calc.timestamp.toLocaleString()}
+
+INPUTS:
+House Price: $${calc.inputs.housePrice.toLocaleString()}
+Annual Income: $${calc.inputs.annualIncome.toLocaleString()}
+Down Payment: $${calc.inputs.downPayment.toLocaleString()}
+Credit Score: ${calc.inputs.creditScore}
+Interest Rate: ${calc.inputs.interestRate.toFixed(2)}%
+Property Tax Rate: ${calc.inputs.propertyTaxRate.toFixed(2)}%
+Insurance Rate: ${calc.inputs.insuranceRate.toFixed(2)}%
+
+RESULTS:
+Loan Amount: $${calc.results.loanAmount.toFixed(2)}
+Monthly Mortgage: $${calc.results.monthlyMortgage.toFixed(2)}
+Monthly Property Tax: $${calc.results.monthlyPropertyTax.toFixed(2)}
+Monthly Insurance: $${calc.results.monthlyInsurance.toFixed(2)}
+Total Monthly Payment: $${calc.results.totalMonthlyPayment.toFixed(2)}
+Monthly Income: $${calc.results.monthlyIncome.toFixed(2)}
+Max Affordable Payment (28%): $${calc.results.maxAffordablePayment.toFixed(2)}
+Actual Income Percentage: ${calc.results.actualIncomePercentage.toFixed(1)}%
+Affordable: ${affordable}
+
+Generated by Can I Afford This House Calculator`;
+            
+            navigator.clipboard.writeText(textContent).then(() => {
+                alert('Calculation results copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Calculation results copied to clipboard!');
+            });
+        }
+        
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all calculation history?')) {
+                calculationHistory = [];
+                updateHistoryDisplay();
+                document.getElementById('exportButtons').style.display = 'none';
+            }
         }
         
         // Add number formatting to inputs
