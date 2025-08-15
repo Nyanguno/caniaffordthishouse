@@ -619,25 +619,72 @@ gtag('config', 'G-25TWGT6LCN');
         </div>
         
         <div class="calculator-card">
+            <div class="currency-selector">
+                <div class="form-group">
+                    <label for="currency">Currency:</label>
+                    <select id="currency">
+                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                        <option value="GBP">🇬🇧 GBP - British Pound</option>
+                        <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                        <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                        <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                        <option value="SEK">🇸🇪 SEK - Swedish Krona</option>
+                        <option value="NOK">🇳🇴 NOK - Norwegian Krone</option>
+                        <option value="DKK">🇩🇰 DKK - Danish Krone</option>
+                        <option value="NZD">🇳🇿 NZD - New Zealand Dollar</option>
+                        <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+                        <option value="HKD">🇭🇰 HKD - Hong Kong Dollar</option>
+                        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                        <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                        <option value="KRW">🇰🇷 KRW - South Korean Won</option>
+                        <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
+                        <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                        <option value="ZAR">🇿🇦 ZAR - South African Rand</option>
+                        <option value="RUB">🇷🇺 RUB - Russian Ruble</option>
+                    </select>
+                </div>
+            </div>
+            
             <form id="affordabilityForm">
                 <div class="form-group">
-                    <label for="housePrice">House Price ($)</label>
+                    <label for="housePrice">House Price (<span id="housePriceCurrency">$</span>)</label>
                     <input type="text" id="housePrice" placeholder="e.g. 350,000" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="annualIncome">Annual Income ($)</label>
+                    <label for="annualIncome">Annual Income (<span id="annualIncomeCurrency">$</span>)</label>
                     <input type="text" id="annualIncome" placeholder="e.g. 70,000" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="downPayment">Down Payment ($)</label>
+                    <label for="downPayment">Down Payment (<span id="downPaymentCurrency">$</span>)</label>
                     <input type="text" id="downPayment" placeholder="e.g. 50,000" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="creditScore">Credit Score (600-850)</label>
-                    <input type="number" id="creditScore" placeholder="e.g. 720" min="600" max="850" required>
+                    <label for="creditScore">Credit Score (600-850) <span class="optional">or select "No Credit Score"</span></label>
+                    <select id="creditScoreType">
+                        <option value="have_score">I have a credit score</option>
+                        <option value="no_score">I don't have a credit score</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="creditScoreInput">
+                    <label for="creditScore">Enter Your Credit Score:</label>
+                    <input type="number" id="creditScore" placeholder="e.g. 720" min="600" max="850">
+                </div>
+                
+                <div class="form-group" id="noCreditOptions" style="display: none;">
+                    <label for="creditProfile">Select Your Credit Profile:</label>
+                    <select id="creditProfile">
+                        <option value="excellent">Excellent Credit History (Always pay on time, low debt)</option>
+                        <option value="good">Good Credit History (Usually pay on time, moderate debt)</option>
+                        <option value="fair">Fair Credit History (Some late payments, higher debt)</option>
+                        <option value="poor">Poor Credit History (Frequent late payments, high debt)</option>
+                        <option value="no_history">No Credit History (First-time borrower)</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -652,11 +699,11 @@ gtag('config', 'G-25TWGT6LCN');
                 
                 <div class="form-group">
                     <label for="propertyTax">Annual Property Tax <span class="optional">(or leave blank to estimate)</span></label>
-                    <input type="text" id="propertyTax" placeholder="e.g. 4,320 (for $360/month)" value="">
+                    <input type="text" id="propertyTax" placeholder="e.g. 4,320 (for monthly amount)" value="">
                 </div>
                 
                 <div class="form-group">
-                    <label for="hoaFees">Monthly HOA Fees <span class="optional">(optional - default $0)</span></label>
+                    <label for="hoaFees">Monthly HOA Fees <span class="optional">(optional - default 0)</span></label>
                     <input type="text" id="hoaFees" placeholder="e.g. 150" min="0" step="1">
                 </div>
                 
@@ -794,7 +841,15 @@ gtag('config', 'G-25TWGT6LCN');
         let calculationHistory = [];
         let currentCalculation = null;
         
-        // Add input formatting for currency fields
+        // Currency symbols and formatting
+        const currencySymbols = {
+            'USD': '$', 'EUR': '€', 'GBP': '£', 'CAD': 'C$', 'AUD': 'A$', 
+            'JPY': '¥', 'CHF': 'CHF', 'SEK': 'kr', 'NOK': 'kr', 'DKK': 'kr',
+            'NZD': 'NZ$', 'SGD': 'S$', 'HKD': 'HK$', 'INR': '₹', 'CNY': '¥',
+            'KRW': '₩', 'MXN': '$', 'BRL': 'R$', 'ZAR': 'R', 'RUB': '₽'
+        };
+        
+        // Add input formatting for currency fields and currency change handler
         document.addEventListener('DOMContentLoaded', function() {
             const currencyInputs = ['housePrice', 'annualIncome', 'downPayment', 'propertyTax', 'hoaFees', 'extraPayment'];
             
@@ -810,7 +865,57 @@ gtag('config', 'G-25TWGT6LCN');
                     });
                 }
             });
+            
+            // Currency change handler
+            const currencySelect = document.getElementById('currency');
+            if (currencySelect) {
+                currencySelect.addEventListener('change', function() {
+                    updateCurrencySymbols();
+                });
+                // Initialize currency symbols
+                updateCurrencySymbols();
+            }
+            
+            // Credit score type handler
+            const creditScoreType = document.getElementById('creditScoreType');
+            if (creditScoreType) {
+                creditScoreType.addEventListener('change', function() {
+                    toggleCreditScoreInputs();
+                });
+                // Initialize credit score inputs
+                toggleCreditScoreInputs();
+            }
         });
+        
+        function toggleCreditScoreInputs() {
+            const creditScoreType = document.getElementById('creditScoreType').value;
+            const creditScoreInput = document.getElementById('creditScoreInput');
+            const noCreditOptions = document.getElementById('noCreditOptions');
+            
+            if (creditScoreType === 'have_score') {
+                creditScoreInput.style.display = 'block';
+                noCreditOptions.style.display = 'none';
+                document.getElementById('creditScore').required = true;
+            } else {
+                creditScoreInput.style.display = 'none';
+                noCreditOptions.style.display = 'block';
+                document.getElementById('creditScore').required = false;
+            }
+        }
+        
+        function updateCurrencySymbols() {
+            const selectedCurrency = document.getElementById('currency').value;
+            const symbol = currencySymbols[selectedCurrency] || '$';
+            
+            // Update currency symbols in labels
+            const currencySpans = ['housePriceCurrency', 'annualIncomeCurrency', 'downPaymentCurrency'];
+            currencySpans.forEach(spanId => {
+                const span = document.getElementById(spanId);
+                if (span) {
+                    span.textContent = symbol;
+                }
+            });
+        }
         
         function formatCurrencyInput(input) {
             let value = input.value.replace(/[^\d.]/g, ''); // Remove all non-digit and non-decimal characters
@@ -846,7 +951,25 @@ gtag('config', 'G-25TWGT6LCN');
             const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
             const annualIncome = parseFormattedNumber(document.getElementById('annualIncome').value);
             const downPayment = parseFormattedNumber(document.getElementById('downPayment').value);
-            const creditScore = parseInt(document.getElementById('creditScore').value);
+            
+            // Get credit score or profile
+            const creditScoreType = document.getElementById('creditScoreType').value;
+            let creditScore;
+            
+            if (creditScoreType === 'have_score') {
+                creditScore = parseInt(document.getElementById('creditScore').value);
+            } else {
+                // Map credit profile to estimated credit score
+                const creditProfile = document.getElementById('creditProfile').value;
+                const profileToScore = {
+                    'excellent': 780,
+                    'good': 720,
+                    'fair': 650,
+                    'poor': 620,
+                    'no_history': 650
+                };
+                creditScore = profileToScore[creditProfile] || 650;
+            }
             
             // Get optional inputs with defaults
             const customInterestRate = parseFloat(document.getElementById('interestRate').value);
@@ -856,18 +979,18 @@ gtag('config', 'G-25TWGT6LCN');
             const extraPayment = parseFormattedNumber(document.getElementById('extraPayment').value);
             
             // Validate required inputs
-            if (!housePrice || !annualIncome || !downPayment || !creditScore) {
+            if (!housePrice || !annualIncome || !downPayment) {
                 showResult('Please fill in all required fields.', 'warning', '⚠️');
+                return;
+            }
+            
+            if (creditScoreType === 'have_score' && (!creditScore || creditScore < 600 || creditScore > 850)) {
+                showResult('Please enter a credit score between 600 and 850, or select "No Credit Score".', 'warning', '⚠️');
                 return;
             }
             
             if (downPayment >= housePrice) {
                 showResult('Down payment cannot be greater than or equal to house price.', 'warning', '⚠️');
-                return;
-            }
-            
-            if (creditScore < 600 || creditScore > 850) {
-                showResult('Please enter a credit score between 600 and 850.', 'warning', '⚠️');
                 return;
             }
             
@@ -888,6 +1011,16 @@ gtag('config', 'G-25TWGT6LCN');
                     interestRate = 7.85;
                 } else {
                     interestRate = 8.75;
+                }
+                
+                // Add extra rate for no credit history
+                if (creditScoreType === 'no_score') {
+                    const creditProfile = document.getElementById('creditProfile').value;
+                    if (creditProfile === 'no_history') {
+                        interestRate += 0.5; // Add 0.5% for no credit history
+                    } else if (creditProfile === 'poor') {
+                        interestRate += 0.25; // Add 0.25% for poor credit
+                    }
                 }
             }
             
