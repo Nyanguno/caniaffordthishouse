@@ -173,6 +173,23 @@ gtag('config', 'G-25TWGT6LCN');
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
+        .form-group select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
         .optional {
             font-weight: 400;
             color: #6b7280;
@@ -509,6 +526,44 @@ gtag('config', 'G-25TWGT6LCN');
             line-height: 1.7;
         }
         
+        .donation-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 0;
+        }
+        
+        .donation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .donation-card h3 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .donation-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .donation-card form {
+            margin: 30px 0;
+        }
+        
+        .donation-note {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-top: 20px !important;
+            margin-bottom: 0 !important;
+        }
+        
         .footer {
             text-align: center;
             padding: 40px 20px;
@@ -527,7 +582,8 @@ gtag('config', 'G-25TWGT6LCN');
             .calculator-card,
             .info-section,
             .testimonials,
-            .faq {
+            .faq,
+            .donation-card {
                 padding: 24px;
             }
             
@@ -566,17 +622,17 @@ gtag('config', 'G-25TWGT6LCN');
             <form id="affordabilityForm">
                 <div class="form-group">
                     <label for="housePrice">House Price ($)</label>
-                    <input type="number" id="housePrice" placeholder="e.g. 350,000" required>
+                    <input type="text" id="housePrice" placeholder="e.g. 350,000" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="annualIncome">Annual Income ($)</label>
-                    <input type="number" id="annualIncome" placeholder="e.g. 70,000" required>
+                    <input type="text" id="annualIncome" placeholder="e.g. 70,000" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="downPayment">Down Payment ($)</label>
-                    <input type="number" id="downPayment" placeholder="e.g. 50,000" required>
+                    <input type="text" id="downPayment" placeholder="e.g. 50,000" required>
                 </div>
                 
                 <div class="form-group">
@@ -588,28 +644,40 @@ gtag('config', 'G-25TWGT6LCN');
                     <label for="loanTerm">Loan Term (Years):</label>
                     <select id="loanTerm">
                         <option value="30">30-Year</option>
+                        <option value="25">25-Year</option>
+                        <option value="20">20-Year</option>
                         <option value="15">15-Year</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="propertyTax">Annual Property Tax <span class="optional">(or leave blank to estimate)</span></label>
-                    <input type="number" id="propertyTax" placeholder="e.g. 4320 (for $360/month)" value="">
+                    <input type="text" id="propertyTax" placeholder="e.g. 4,320 (for $360/month)" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="hoaFees">Monthly HOA Fees <span class="optional">(optional - default $0)</span></label>
+                    <input type="text" id="hoaFees" placeholder="e.g. 150" min="0" step="1">
                 </div>
                 
                 <div class="form-group">
                     <label for="interestRate">Interest Rate (%) <span class="optional">(optional - auto-calculated from credit score)</span></label>
-                    <input type="number" id="interestRate" placeholder="e.g. 7.0" min="3" max="15" step="0.1">
+                    <input type="number" id="interestRate" placeholder="e.g. 7.25" min="3" max="15" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label for="propertyTaxRate">Property Tax Rate (%) <span class="optional">(optional - default 1.2%)</span></label>
-                    <input type="number" id="propertyTaxRate" placeholder="e.g. 1.2" min="0" max="5" step="0.1">
+                    <input type="number" id="propertyTaxRate" placeholder="e.g. 1.25" min="0" max="5" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label for="insuranceRate">Insurance Rate (%) <span class="optional">(optional - default 0.3%)</span></label>
-                    <input type="number" id="insuranceRate" placeholder="e.g. 0.3" min="0" max="2" step="0.1">
+                    <input type="number" id="insuranceRate" placeholder="e.g. 0.35" min="0" max="2" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="extraPayment">Extra Monthly Payment <span class="optional">(optional - see payoff impact)</span></label>
+                    <input type="text" id="extraPayment" placeholder="e.g. 200" min="0" step="1">
                 </div>
                 
                 <button type="submit" class="calculate-btn">Calculate Affordability</button>
@@ -699,6 +767,24 @@ gtag('config', 'G-25TWGT6LCN');
         </div>
     </div>
     
+    <div class="donation-section">
+        <div class="container">
+            <div class="donation-card">
+                <h3>💝 Support This Free Tool</h3>
+                <p>This calculator is completely free and helps thousands of people make informed home buying decisions. If it helped you, consider supporting its development and maintenance.</p>
+                <form action="https://www.paypal.com/donate" method="post" target="_top">
+                    <input type="hidden" name="business" value="waitherakelon@gmail.com" />
+                    <input type="hidden" name="no_recurring" value="0" />
+                    <input type="hidden" name="item_name" value="Support Can I Afford This House Calculator" />
+                    <input type="hidden" name="currency_code" value="USD" />
+                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+                </form>
+                <p class="donation-note">Every contribution helps keep this tool free for everyone! 🏠</p>
+            </div>
+        </div>
+    </div>
+    
     <div class="footer">
         <p>&copy; 2024 Can I Afford This House? | Free House Affordability Calculator</p>
     </div>
@@ -708,22 +794,66 @@ gtag('config', 'G-25TWGT6LCN');
         let calculationHistory = [];
         let currentCalculation = null;
         
+        // Add input formatting for currency fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const currencyInputs = ['housePrice', 'annualIncome', 'downPayment', 'propertyTax', 'hoaFees', 'extraPayment'];
+            
+            currencyInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        formatCurrencyInput(e.target);
+                    });
+                    
+                    input.addEventListener('blur', function(e) {
+                        formatCurrencyInput(e.target);
+                    });
+                }
+            });
+        });
+        
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/[^\d.]/g, ''); // Remove all non-digit and non-decimal characters
+            
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            
+            // Handle decimal places
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            
+            // Format with commas
+            const number = parseFloat(value);
+            if (!isNaN(number)) {
+                input.value = number.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                });
+            }
+        }
+        
         document.getElementById('affordabilityForm').addEventListener('submit', function(e) {
             e.preventDefault();
             calculateAffordability();
         });
         
         function calculateAffordability() {
-            // Get input values
-            const housePrice = parseFloat(document.getElementById('housePrice').value);
-            const annualIncome = parseFloat(document.getElementById('annualIncome').value);
-            const downPayment = parseFloat(document.getElementById('downPayment').value);
+            // Get input values (using parseFormattedNumber to handle commas)
+            const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
+            const annualIncome = parseFormattedNumber(document.getElementById('annualIncome').value);
+            const downPayment = parseFormattedNumber(document.getElementById('downPayment').value);
             const creditScore = parseInt(document.getElementById('creditScore').value);
             
             // Get optional inputs with defaults
             const customInterestRate = parseFloat(document.getElementById('interestRate').value);
             const customPropertyTaxRate = parseFloat(document.getElementById('propertyTaxRate').value);
             const customInsuranceRate = parseFloat(document.getElementById('insuranceRate').value);
+            const hoaFees = parseFormattedNumber(document.getElementById('hoaFees').value);
+            const extraPayment = parseFormattedNumber(document.getElementById('extraPayment').value);
             
             // Validate required inputs
             if (!housePrice || !annualIncome || !downPayment || !creditScore) {
@@ -744,20 +874,20 @@ gtag('config', 'G-25TWGT6LCN');
             // Calculate loan amount
             const loanAmount = housePrice - downPayment;
             
-            // Determine interest rate
+            // Determine interest rate with improved precision
             let interestRate;
             if (customInterestRate && customInterestRate > 0) {
-                interestRate = customInterestRate;
+                interestRate = Math.round(customInterestRate * 100) / 100; // Round to 2 decimal places
             } else {
-                // Auto-calculate based on credit score
+                // Auto-calculate based on credit score with more precision
                 if (creditScore >= 760) {
-                    interestRate = 6.5;
+                    interestRate = 6.75;
                 } else if (creditScore >= 700) {
-                    interestRate = 7.0;
+                    interestRate = 7.25;
                 } else if (creditScore >= 650) {
-                    interestRate = 7.8;
+                    interestRate = 7.85;
                 } else {
-                    interestRate = 8.5;
+                    interestRate = 8.75;
                 }
             }
             
@@ -767,17 +897,27 @@ gtag('config', 'G-25TWGT6LCN');
             const numberOfPayments = loanTermYears * 12;
             const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
             
+            // Calculate total interest paid over the life of the loan
+            const totalInterestPaid = (monthlyMortgage * numberOfPayments) - loanAmount;
+            const totalLoanCost = loanAmount + totalInterestPaid;
+            
+            // Calculate impact of extra payments
+            let extraPaymentResults = null;
+            if (extraPayment > 0) {
+                extraPaymentResults = calculateExtraPaymentImpact(loanAmount, monthlyRate, monthlyMortgage, extraPayment);
+            }
+            
             // Calculate property taxes and insurance
             // Use custom annual property tax if provided, else estimate from house price
-            const annualPropertyTaxInput = parseFloat(document.getElementById('propertyTax').value);
+            const annualPropertyTaxInput = parseFormattedNumber(document.getElementById('propertyTax').value);
             const annualPropertyTax = annualPropertyTaxInput || (housePrice * 0.012); // 1.2% fallback
             const monthlyPropertyTax = annualPropertyTax / 12;
             
             const insuranceRate = customInsuranceRate || 0.3; // Default 0.3%
             const monthlyInsurance = (housePrice * (insuranceRate / 100)) / 12;
             
-            // Total monthly payment
-            const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance;
+            // Total monthly payment (including HOA fees)
+            const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance + hoaFees;
             
             // Calculate 28% of monthly income
             const monthlyIncome = annualIncome / 12;
@@ -797,17 +937,24 @@ gtag('config', 'G-25TWGT6LCN');
                     loanTermYears,
                     interestRate,
                     annualPropertyTax,
-                    insuranceRate
+                    insuranceRate,
+                    hoaFees,
+                    extraPayment
                 },
                 results: {
                     loanAmount,
                     monthlyMortgage,
+                    totalInterestPaid,
+                    totalLoanCost,
+                    loanTermYears,
                     monthlyPropertyTax,
                     monthlyInsurance,
+                    hoaFees,
                     totalMonthlyPayment,
                     monthlyIncome,
                     maxAffordablePayment,
-                    actualIncomePercentage
+                    actualIncomePercentage,
+                    extraPaymentResults
                 }
             };
             
@@ -848,9 +995,13 @@ gtag('config', 'G-25TWGT6LCN');
                         <span>$${monthlyPropertyTax.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Insurance (${insuranceRate}%):</span>
+                        <span>Insurance (${insuranceRate.toFixed(2)}%):</span>
                         <span>$${monthlyInsurance.toFixed(2)}</span>
                     </div>
+                    ${hoaFees > 0 ? `<div class="payment-item">
+                        <span>HOA Fees:</span>
+                        <span>$${hoaFees.toFixed(2)}</span>
+                    </div>` : ''}
                     <div class="payment-item total">
                         <span>Total Monthly Payment:</span>
                         <span>$${totalMonthlyPayment.toFixed(2)}</span>
@@ -863,6 +1014,43 @@ gtag('config', 'G-25TWGT6LCN');
                         <span>Interest Rate Used:</span>
                         <span>${interestRate.toFixed(2)}%</span>
                     </div>
+                </div>
+                
+                <div class="payment-breakdown">
+                    <h4>Loan Details & Interest Information:</h4>
+                    <div class="payment-item">
+                        <span>Loan Term:</span>
+                        <span>${loanTermYears} years (${numberOfPayments} payments)</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Total Interest Paid:</span>
+                        <span>$${totalInterestPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Total Cost of Loan:</span>
+                        <span>$${totalLoanCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Interest vs Principal:</span>
+                        <span>${((totalInterestPaid / totalLoanCost) * 100).toFixed(1)}% interest, ${((loanAmount / totalLoanCost) * 100).toFixed(1)}% principal</span>
+                    </div>
+                    ${extraPaymentResults ? `
+                    <div class="payment-item" style="border-top: 2px solid #e5e7eb; margin-top: 15px; padding-top: 15px;">
+                        <span><strong>With $${extraPayment.toLocaleString()} Extra Monthly Payment:</strong></span>
+                        <span></span>
+                    </div>
+                    <div class="payment-item">
+                        <span>New Payoff Time:</span>
+                        <span>${extraPaymentResults.years} years, ${extraPaymentResults.remainingMonths} months</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Interest Saved:</span>
+                        <span>$${extraPaymentResults.interestSaved.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Time Saved:</span>
+                        <span>${Math.floor(extraPaymentResults.timeSaved / 12)} years, ${extraPaymentResults.timeSaved % 12} months</span>
+                    </div>` : ''}
                 </div>
                 ${percentageHighlight}
             `;
@@ -944,11 +1132,11 @@ gtag('config', 'G-25TWGT6LCN');
                 return;
             }
             
-            let csvContent = 'Timestamp,House Price,Annual Income,Down Payment,Credit Score,Loan Term Years,Interest Rate,Annual Property Tax,Insurance Rate,Loan Amount,Monthly Mortgage,Monthly Property Tax,Monthly Insurance,Total Monthly Payment,Monthly Income,Max Affordable Payment,Actual Income Percentage,Affordable\n';
+            let csvContent = 'Timestamp,House Price,Annual Income,Down Payment,Credit Score,Loan Term Years,Interest Rate,Annual Property Tax,Insurance Rate,HOA Fees,Loan Amount,Monthly Mortgage,Total Interest Paid,Total Loan Cost,Monthly Property Tax,Monthly Insurance,HOA Fees Monthly,Total Monthly Payment,Monthly Income,Max Affordable Payment,Actual Income Percentage,Affordable\n';
             
             calculationHistory.forEach(calc => {
                 const affordable = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'Yes' : 'No';
-                csvContent += `${calc.timestamp.toISOString()},${calc.inputs.housePrice},${calc.inputs.annualIncome},${calc.inputs.downPayment},${calc.inputs.creditScore},${calc.inputs.loanTermYears},${calc.inputs.interestRate},${calc.inputs.annualPropertyTax},${calc.inputs.insuranceRate},${calc.results.loanAmount.toFixed(2)},${calc.results.monthlyMortgage.toFixed(2)},${calc.results.monthlyPropertyTax.toFixed(2)},${calc.results.monthlyInsurance.toFixed(2)},${calc.results.totalMonthlyPayment.toFixed(2)},${calc.results.monthlyIncome.toFixed(2)},${calc.results.maxAffordablePayment.toFixed(2)},${calc.results.actualIncomePercentage.toFixed(2)},${affordable}\n`;
+                csvContent += `${calc.timestamp.toISOString()},${calc.inputs.housePrice},${calc.inputs.annualIncome},${calc.inputs.downPayment},${calc.inputs.creditScore},${calc.inputs.loanTermYears},${calc.inputs.interestRate},${calc.inputs.annualPropertyTax},${calc.inputs.insuranceRate},${calc.inputs.hoaFees || 0},${calc.results.loanAmount.toFixed(2)},${calc.results.monthlyMortgage.toFixed(2)},${(calc.results.totalInterestPaid || 0).toFixed(2)},${(calc.results.totalLoanCost || 0).toFixed(2)},${calc.results.monthlyPropertyTax.toFixed(2)},${calc.results.monthlyInsurance.toFixed(2)},${(calc.inputs.hoaFees || 0).toFixed(2)},${calc.results.totalMonthlyPayment.toFixed(2)},${calc.results.monthlyIncome.toFixed(2)},${calc.results.maxAffordablePayment.toFixed(2)},${calc.results.actualIncomePercentage.toFixed(2)},${affordable}\n`;
             });
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -983,13 +1171,17 @@ Loan Term: ${calc.inputs.loanTermYears} years
 Interest Rate: ${calc.inputs.interestRate.toFixed(2)}%
 Annual Property Tax: $${calc.inputs.annualPropertyTax.toFixed(2)}
 Insurance Rate: ${calc.inputs.insuranceRate.toFixed(2)}%
+Monthly HOA Fees: $${(calc.inputs.hoaFees || 0).toFixed(2)}
 
 RESULTS:
 Loan Amount: $${calc.results.loanAmount.toFixed(2)}
 Monthly Mortgage: $${calc.results.monthlyMortgage.toFixed(2)}
+Total Interest Paid: $${(calc.results.totalInterestPaid || 0).toFixed(2)}
+Total Cost of Loan: $${(calc.results.totalLoanCost || 0).toFixed(2)}
+Loan Term: ${calc.inputs.loanTermYears} years
 Monthly Property Tax: $${calc.results.monthlyPropertyTax.toFixed(2)}
 Monthly Insurance: $${calc.results.monthlyInsurance.toFixed(2)}
-Total Monthly Payment: $${calc.results.totalMonthlyPayment.toFixed(2)}
+${calc.inputs.hoaFees > 0 ? `Monthly HOA Fees: $${calc.inputs.hoaFees.toFixed(2)}\n` : ''}Total Monthly Payment: $${calc.results.totalMonthlyPayment.toFixed(2)}
 Monthly Income: $${calc.results.monthlyIncome.toFixed(2)}
 Max Affordable Payment (28%): $${calc.results.maxAffordablePayment.toFixed(2)}
 Actual Income Percentage: ${calc.results.actualIncomePercentage.toFixed(1)}%
@@ -1032,7 +1224,23 @@ Generated by Can I Afford This House Calculator`;
             formatNumberInput(e.target);
         });
         
+        document.getElementById('propertyTax').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
+        document.getElementById('hoaFees').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
+        document.getElementById('extraPayment').addEventListener('input', function(e) {
+            formatNumberInput(e.target);
+        });
+        
         function formatNumberInput(input) {
+            // Store cursor position
+            const cursorPosition = input.selectionStart;
+            const oldValue = input.value;
+            
             // Remove any non-digit characters except decimal point
             let value = input.value.replace(/[^\d.]/g, '');
             
@@ -1042,7 +1250,58 @@ Generated by Can I Afford This House Calculator`;
                 value = parts[0] + '.' + parts.slice(1).join('');
             }
             
+            // Add commas for thousands separator
+            if (parts[0]) {
+                const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                value = parts[1] !== undefined ? integerPart + '.' + parts[1] : integerPart;
+            }
+            
             input.value = value;
+            
+            // Restore cursor position, accounting for added commas
+            const newCommas = (value.match(/,/g) || []).length;
+            const oldCommas = (oldValue.match(/,/g) || []).length;
+            const newPosition = cursorPosition + (newCommas - oldCommas);
+            input.setSelectionRange(newPosition, newPosition);
+        }
+        
+        // Function to parse formatted number input (remove commas)
+        function parseFormattedNumber(value) {
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        }
+        
+        function calculateExtraPaymentImpact(loanAmount, monthlyRate, regularPayment, extraPayment) {
+            let balance = loanAmount;
+            let totalInterest = 0;
+            let months = 0;
+            const maxMonths = 360; // 30 years max to prevent infinite loops
+            
+            while (balance > 0.01 && months < maxMonths) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = regularPayment - interestPayment + extraPayment;
+                
+                if (principalPayment <= 0) break; // Safety check
+                
+                totalInterest += interestPayment;
+                balance -= principalPayment;
+                months++;
+                
+                if (balance < 0) balance = 0;
+            }
+            
+            const years = Math.floor(months / 12);
+            const remainingMonths = months % 12;
+            const interestSaved = ((regularPayment * (loanAmount > 0 ? 360 : 180)) - loanAmount) - totalInterest;
+            const timeSaved = 360 - months; // Assuming 30-year original loan
+            
+            return {
+                months: months,
+                years: years,
+                remainingMonths: remainingMonths,
+                totalInterest: totalInterest,
+                interestSaved: Math.max(0, interestSaved),
+                timeSaved: Math.max(0, timeSaved)
+            };
         }
     </script>
 </body>
