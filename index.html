@@ -647,10 +647,33 @@ gtag('config', 'G-25TWGT6LCN');
                 </div>
             </div>
             
-            <form id="affordabilityForm">
+            <div class="calculator-mode">
                 <div class="form-group">
+                    <label for="calculatorMode">Calculator Mode:</label>
+                    <select id="calculatorMode">
+                        <option value="affordability">Affordability Calculator (Can I afford this house?)</option>
+                        <option value="reverse">Reverse Calculator (What house can I afford?)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <form id="affordabilityForm">
+                <div class="form-group" id="housePriceGroup">
                     <label for="housePrice">House Price (<span id="housePriceCurrency">$</span>)</label>
                     <input type="text" id="housePrice" placeholder="e.g. 350,000" required>
+                </div>
+                
+                <div class="form-group" id="maxPaymentGroup" style="display: none;">
+                    <label for="maxPayment">Maximum Monthly Payment (<span id="maxPaymentCurrency">$</span>)</label>
+                    <input type="text" id="maxPayment" placeholder="e.g. 2,500">
+                </div>
+                
+                <div class="form-group">
+                    <label for="incomeType">Income Type:</label>
+                    <select id="incomeType">
+                        <option value="gross">Gross Income (Before taxes)</option>
+                        <option value="net">Net Income (After taxes - take-home pay)</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -698,13 +721,83 @@ gtag('config', 'G-25TWGT6LCN');
                 </div>
                 
                 <div class="form-group">
+                    <label for="state">State:</label>
+                    <select id="state">
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="propertyType">Property Type:</label>
+                    <select id="propertyType">
+                        <option value="single_family">Single-Family Home</option>
+                        <option value="condo">Condo</option>
+                        <option value="townhouse">Townhouse</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label for="propertyTax">Annual Property Tax <span class="optional">(or leave blank to estimate)</span></label>
                     <input type="text" id="propertyTax" placeholder="e.g. 4,320 (for monthly amount)" value="">
                 </div>
                 
                 <div class="form-group">
-                    <label for="hoaFees">Monthly HOA Fees <span class="optional">(optional - default 0)</span></label>
+                    <label for="hoaFees">Monthly HOA Fees <span class="optional">(optional - auto-estimated by property type)</span></label>
                     <input type="text" id="hoaFees" placeholder="e.g. 150" min="0" step="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="maintenanceCost">Monthly Maintenance Cost <span class="optional">(optional - auto-estimated at 1-2% of home value annually)</span></label>
+                    <input type="text" id="maintenanceCost" placeholder="e.g. 300" min="0" step="1">
                 </div>
                 
                 <div class="form-group">
@@ -841,6 +934,27 @@ gtag('config', 'G-25TWGT6LCN');
         let calculationHistory = [];
         let currentCalculation = null;
         
+        // State property tax rates (as percentages)
+        const statePropertyTaxRates = {
+            'AL': 0.36, 'AK': 0.91, 'AZ': 0.44, 'AR': 0.52, 'CA': 0.65,
+            'CO': 0.51, 'CT': 1.73, 'DE': 0.43, 'FL': 0.83, 'GA': 0.92,
+            'HI': 0.32, 'ID': 0.67, 'IL': 2.08, 'IN': 0.81, 'IA': 1.53,
+            'KS': 1.29, 'KY': 0.72, 'LA': 0.18, 'ME': 1.09, 'MD': 0.96,
+            'MA': 1.04, 'MI': 1.27, 'MN': 1.12, 'MS': 0.52, 'MO': 0.97,
+            'MT': 0.69, 'NE': 1.73, 'NV': 0.53, 'NH': 1.86, 'NJ': 2.13,
+            'NM': 0.55, 'NY': 1.30, 'NC': 0.78, 'ND': 0.98, 'OH': 1.56,
+            'OK': 0.74, 'OR': 0.87, 'PA': 1.58, 'RI': 1.17, 'SC': 0.50,
+            'SD': 1.31, 'TN': 0.64, 'TX': 1.60, 'UT': 0.58, 'VT': 1.59,
+            'VA': 0.74, 'WA': 0.84, 'WV': 0.59, 'WI': 1.85, 'WY': 0.55
+        };
+        
+        // HOA fee estimates by property type (monthly)
+        const hoaEstimates = {
+            'single_family': 50,   // Single-family homes typically have lower HOA fees
+            'condo': 350,          // Condos have higher fees due to shared amenities
+            'townhouse': 150       // Townhouses are in between
+        };
+        
         // Currency symbols and formatting
         const currencySymbols = {
             'USD': '$', 'EUR': '€', 'GBP': '£', 'CAD': 'C$', 'AUD': 'A$', 
@@ -851,7 +965,7 @@ gtag('config', 'G-25TWGT6LCN');
         
         // Add input formatting for currency fields and currency change handler
         document.addEventListener('DOMContentLoaded', function() {
-            const currencyInputs = ['housePrice', 'annualIncome', 'downPayment', 'propertyTax', 'hoaFees', 'extraPayment'];
+            const currencyInputs = ['housePrice', 'annualIncome', 'downPayment', 'propertyTax', 'hoaFees', 'extraPayment', 'maxPayment', 'maintenanceCost'];
             
             currencyInputs.forEach(inputId => {
                 const input = document.getElementById(inputId);
@@ -865,6 +979,41 @@ gtag('config', 'G-25TWGT6LCN');
                     });
                 }
             });
+            
+            // Calculator mode change handler
+            const calculatorMode = document.getElementById('calculatorMode');
+            if (calculatorMode) {
+                calculatorMode.addEventListener('change', function() {
+                    toggleCalculatorMode();
+                });
+                // Initialize calculator mode
+                toggleCalculatorMode();
+            }
+            
+            // State change handler for property tax estimation
+            const stateSelect = document.getElementById('state');
+            if (stateSelect) {
+                stateSelect.addEventListener('change', function() {
+                    updatePropertyTaxEstimate();
+                });
+            }
+            
+            // Property type change handler for HOA estimation
+            const propertyTypeSelect = document.getElementById('propertyType');
+            if (propertyTypeSelect) {
+                propertyTypeSelect.addEventListener('change', function() {
+                    updateHOAEstimate();
+                    updateMaintenanceEstimate();
+                });
+            }
+            
+            // House price change handler for maintenance estimation
+            const housePriceInput = document.getElementById('housePrice');
+            if (housePriceInput) {
+                housePriceInput.addEventListener('input', function() {
+                    updateMaintenanceEstimate();
+                });
+            }
             
             // Currency change handler
             const currencySelect = document.getElementById('currency');
@@ -887,6 +1036,69 @@ gtag('config', 'G-25TWGT6LCN');
             }
         });
         
+        function toggleCalculatorMode() {
+            const mode = document.getElementById('calculatorMode').value;
+            const housePriceGroup = document.getElementById('housePriceGroup');
+            const maxPaymentGroup = document.getElementById('maxPaymentGroup');
+            const calculateBtn = document.querySelector('.calculate-btn');
+            
+            if (mode === 'reverse') {
+                housePriceGroup.style.display = 'none';
+                maxPaymentGroup.style.display = 'block';
+                calculateBtn.textContent = 'Calculate Maximum House Price';
+                document.getElementById('housePrice').required = false;
+                document.getElementById('maxPayment').required = true;
+            } else {
+                housePriceGroup.style.display = 'block';
+                maxPaymentGroup.style.display = 'none';
+                calculateBtn.textContent = 'Calculate Affordability';
+                document.getElementById('housePrice').required = true;
+                document.getElementById('maxPayment').required = false;
+            }
+        }
+        
+        function updatePropertyTaxEstimate() {
+            const state = document.getElementById('state').value;
+            const propertyTaxInput = document.getElementById('propertyTax');
+            
+            if (propertyTaxInput.value === '' && state && statePropertyTaxRates[state]) {
+                const housePrice = parseFormattedNumber(document.getElementById('housePrice').value) || 350000;
+                const estimatedTax = (housePrice * statePropertyTaxRates[state] / 100);
+                propertyTaxInput.placeholder = `Auto-estimated: ${currencySymbol}${Math.round(estimatedTax).toLocaleString()} annually`;
+            }
+        }
+        
+        function updateHOAEstimate() {
+            const propertyType = document.getElementById('propertyType').value;
+            const hoaFeesInput = document.getElementById('hoaFees');
+            
+            if (hoaFeesInput.value === '' && propertyType && hoaEstimates[propertyType]) {
+                const estimatedHOA = hoaEstimates[propertyType];
+                hoaFeesInput.placeholder = `Auto-estimated: ${currencySymbol}${estimatedHOA}/month`;
+            }
+        }
+        
+        function updateMaintenanceEstimate() {
+            const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
+            const propertyType = document.getElementById('propertyType').value;
+            const maintenanceInput = document.getElementById('maintenanceCost');
+            
+            if (maintenanceInput.value === '' && housePrice) {
+                // Estimate 1.5% of home value annually for maintenance
+                let maintenanceRate = 0.015;
+                
+                // Adjust based on property type
+                if (propertyType === 'condo') {
+                    maintenanceRate = 0.01; // Lower for condos due to HOA coverage
+                } else if (propertyType === 'townhouse') {
+                    maintenanceRate = 0.012; // Slightly lower for townhouses
+                }
+                
+                const estimatedMaintenance = (housePrice * maintenanceRate) / 12;
+                maintenanceInput.placeholder = `Auto-estimated: ${currencySymbol}${Math.round(estimatedMaintenance).toLocaleString()}/month`;
+            }
+        }
+        
         function toggleCreditScoreInputs() {
             const creditScoreType = document.getElementById('creditScoreType').value;
             const creditScoreInput = document.getElementById('creditScoreInput');
@@ -908,13 +1120,16 @@ gtag('config', 'G-25TWGT6LCN');
             const symbol = currencySymbols[selectedCurrency] || '$';
             
             // Update currency symbols in labels
-            const currencySpans = ['housePriceCurrency', 'annualIncomeCurrency', 'downPaymentCurrency'];
+            const currencySpans = ['housePriceCurrency', 'annualIncomeCurrency', 'downPaymentCurrency', 'maxPaymentCurrency'];
             currencySpans.forEach(spanId => {
                 const span = document.getElementById(spanId);
                 if (span) {
                     span.textContent = symbol;
                 }
             });
+            
+            // Update global currency symbol variable
+            window.currencySymbol = symbol;
         }
         
         function formatCurrencyInput(input) {
@@ -947,10 +1162,18 @@ gtag('config', 'G-25TWGT6LCN');
         });
         
         function calculateAffordability() {
+            const calculatorMode = document.getElementById('calculatorMode').value;
+            
+            if (calculatorMode === 'reverse') {
+                calculateReverseAffordability();
+                return;
+            }
+            
             // Get input values (using parseFormattedNumber to handle commas)
             const housePrice = parseFormattedNumber(document.getElementById('housePrice').value);
             const annualIncome = parseFormattedNumber(document.getElementById('annualIncome').value);
             const downPayment = parseFormattedNumber(document.getElementById('downPayment').value);
+            const incomeType = document.getElementById('incomeType').value;
             
             // Get credit score or profile
             const creditScoreType = document.getElementById('creditScoreType').value;
@@ -971,11 +1194,28 @@ gtag('config', 'G-25TWGT6LCN');
                 creditScore = profileToScore[creditProfile] || 650;
             }
             
-            // Get optional inputs with defaults
+            // Get optional inputs with defaults and estimates
             const customInterestRate = parseFloat(document.getElementById('interestRate').value);
             const customPropertyTaxRate = parseFloat(document.getElementById('propertyTaxRate').value);
             const customInsuranceRate = parseFloat(document.getElementById('insuranceRate').value);
-            const hoaFees = parseFormattedNumber(document.getElementById('hoaFees').value);
+            
+            // Get HOA fees with auto-estimation
+            let hoaFees = parseFormattedNumber(document.getElementById('hoaFees').value);
+            if (!hoaFees) {
+                const propertyType = document.getElementById('propertyType').value;
+                hoaFees = hoaEstimates[propertyType] || 0;
+            }
+            
+            // Get maintenance costs with auto-estimation
+            let maintenanceCost = parseFormattedNumber(document.getElementById('maintenanceCost').value);
+            if (!maintenanceCost && housePrice) {
+                const propertyType = document.getElementById('propertyType').value;
+                let maintenanceRate = 0.015;
+                if (propertyType === 'condo') maintenanceRate = 0.01;
+                else if (propertyType === 'townhouse') maintenanceRate = 0.012;
+                maintenanceCost = (housePrice * maintenanceRate) / 12;
+            }
+            
             const extraPayment = parseFormattedNumber(document.getElementById('extraPayment').value);
             
             // Validate required inputs
@@ -992,6 +1232,14 @@ gtag('config', 'G-25TWGT6LCN');
             if (downPayment >= housePrice) {
                 showResult('Down payment cannot be greater than or equal to house price.', 'warning', '⚠️');
                 return;
+            }
+            
+            // Calculate effective income for affordability calculation
+            let effectiveIncome = annualIncome;
+            if (incomeType === 'net') {
+                // Convert net income to gross income estimate for 28% rule calculation
+                // Assume average tax rate of 25% for estimation
+                effectiveIncome = annualIncome / 0.75;
             }
             
             // Calculate loan amount
@@ -1040,20 +1288,26 @@ gtag('config', 'G-25TWGT6LCN');
                 extraPaymentResults = calculateExtraPaymentImpact(loanAmount, monthlyRate, monthlyMortgage, extraPayment, loanTermYears);
             }
             
-            // Calculate property taxes and insurance
-            // Use custom annual property tax if provided, else estimate from house price
+            // Calculate property taxes with state-based estimation
             const annualPropertyTaxInput = parseFormattedNumber(document.getElementById('propertyTax').value);
-            const annualPropertyTax = annualPropertyTaxInput || (housePrice * 0.012); // 1.2% fallback
+            let annualPropertyTax;
+            if (annualPropertyTaxInput) {
+                annualPropertyTax = annualPropertyTaxInput;
+            } else {
+                const state = document.getElementById('state').value;
+                const taxRate = statePropertyTaxRates[state] || 1.2;
+                annualPropertyTax = housePrice * (taxRate / 100);
+            }
             const monthlyPropertyTax = annualPropertyTax / 12;
             
             const insuranceRate = customInsuranceRate || 0.3; // Default 0.3%
             const monthlyInsurance = (housePrice * (insuranceRate / 100)) / 12;
             
-            // Total monthly payment (including HOA fees)
-            const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance + hoaFees;
+            // Total monthly payment (including HOA fees and maintenance)
+            const totalMonthlyPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance + hoaFees + (maintenanceCost || 0);
             
-            // Calculate 28% of monthly income
-            const monthlyIncome = annualIncome / 12;
+            // Calculate 28% of monthly income (use effective income for net income mode)
+            const monthlyIncome = effectiveIncome / 12;
             const maxAffordablePayment = monthlyIncome * 0.28;
             
             // Calculate actual percentage of income used
@@ -1072,7 +1326,9 @@ gtag('config', 'G-25TWGT6LCN');
                     annualPropertyTax,
                     insuranceRate,
                     hoaFees,
-                    extraPayment
+                    maintenanceCost: maintenanceCost || 0,
+                    extraPayment,
+                    incomeType
                 },
                 results: {
                     loanAmount,
@@ -1083,6 +1339,7 @@ gtag('config', 'G-25TWGT6LCN');
                     monthlyPropertyTax,
                     monthlyInsurance,
                     hoaFees,
+                    maintenanceCost: maintenanceCost || 0,
                     totalMonthlyPayment,
                     monthlyIncome,
                     maxAffordablePayment,
@@ -1097,15 +1354,15 @@ gtag('config', 'G-25TWGT6LCN');
             if (totalMonthlyPayment <= maxAffordablePayment) {
                 resultClass = 'success';
                 resultIcon = '✅';
-                resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your income.`;
+                resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of ${currencySymbol}${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your ${incomeType} income.`;
             } else if (totalMonthlyPayment <= maxAffordablePayment * 1.15) {
                 resultClass = 'warning';
                 resultIcon = '⚠️';
-                resultMessage = `<strong>This house is borderline affordable.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} exceeds the recommended 28% rule. Consider improving your credit score or saving a larger down payment.`;
+                resultMessage = `<strong>This house is borderline affordable.</strong><br><br>Your estimated monthly payment of ${currencySymbol}${totalMonthlyPayment.toFixed(2)} exceeds the recommended 28% rule. Consider improving your credit score or saving a larger down payment.`;
             } else {
                 resultClass = 'danger';
                 resultIcon = '❌';
-                resultMessage = `<strong>This house is likely out of your budget.</strong><br><br>Your estimated monthly payment of $${totalMonthlyPayment.toFixed(2)} significantly exceeds the recommended 28% of your income ($${maxAffordablePayment.toFixed(2)}).`;
+                resultMessage = `<strong>This house is likely out of your budget.</strong><br><br>Your estimated monthly payment of ${currencySymbol}${totalMonthlyPayment.toFixed(2)} significantly exceeds the recommended 28% of your income (${currencySymbol}${maxAffordablePayment.toFixed(2)}).`;
             }
             
             // Add percentage highlight
@@ -1113,7 +1370,7 @@ gtag('config', 'G-25TWGT6LCN');
             if (actualIncomePercentage > 28) percentageClass = 'warning';
             if (actualIncomePercentage > 35) percentageClass = 'danger';
             
-            const percentageHighlight = `<div class="percentage-highlight ${percentageClass}">Your payment is ${actualIncomePercentage.toFixed(1)}% of your income</div>`;
+            const percentageHighlight = `<div class="percentage-highlight ${percentageClass}">Your payment is ${actualIncomePercentage.toFixed(1)}% of your ${incomeType} income</div>`;
             
             // Create payment breakdown
             const breakdown = `
@@ -1121,27 +1378,31 @@ gtag('config', 'G-25TWGT6LCN');
                     <h4>Monthly Payment Breakdown:</h4>
                     <div class="payment-item">
                         <span>Mortgage Payment:</span>
-                        <span>$${monthlyMortgage.toFixed(2)}</span>
+                        <span>${currencySymbol}${monthlyMortgage.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
-                        <span>Property Taxes ${annualPropertyTaxInput ? '(custom)' : '(estimated)'}:</span>
-                        <span>$${monthlyPropertyTax.toFixed(2)}</span>
+                        <span>Property Taxes ${annualPropertyTaxInput ? '(custom)' : '(auto-estimated)'}:</span>
+                        <span>${currencySymbol}${monthlyPropertyTax.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
                         <span>Insurance (${insuranceRate.toFixed(2)}%):</span>
-                        <span>$${monthlyInsurance.toFixed(2)}</span>
+                        <span>${currencySymbol}${monthlyInsurance.toFixed(2)}</span>
                     </div>
                     ${hoaFees > 0 ? `<div class="payment-item">
-                        <span>HOA Fees:</span>
-                        <span>$${hoaFees.toFixed(2)}</span>
+                        <span>HOA Fees ${parseFormattedNumber(document.getElementById('hoaFees').value) ? '(custom)' : '(auto-estimated)'}:</span>
+                        <span>${currencySymbol}${hoaFees.toFixed(2)}</span>
+                    </div>` : ''}
+                    ${maintenanceCost > 0 ? `<div class="payment-item">
+                        <span>Maintenance ${parseFormattedNumber(document.getElementById('maintenanceCost').value) ? '(custom)' : '(auto-estimated)'}:</span>
+                        <span>${currencySymbol}${maintenanceCost.toFixed(2)}</span>
                     </div>` : ''}
                     <div class="payment-item total">
                         <span>Total Monthly Payment:</span>
-                        <span>$${totalMonthlyPayment.toFixed(2)}</span>
+                        <span>${currencySymbol}${totalMonthlyPayment.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
                         <span>Your Max Recommended (28%):</span>
-                        <span>$${maxAffordablePayment.toFixed(2)}</span>
+                        <span>${currencySymbol}${maxAffordablePayment.toFixed(2)}</span>
                     </div>
                     <div class="payment-item">
                         <span>Interest Rate Used:</span>
@@ -1157,34 +1418,37 @@ gtag('config', 'G-25TWGT6LCN');
                     </div>
                     <div class="payment-item">
                         <span>Total Interest Paid:</span>
-                        <span>$${totalInterestPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span>${currencySymbol}${totalInterestPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </div>
                     <div class="payment-item">
                         <span>Total Cost of Loan:</span>
-                        <span>$${totalLoanCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span>${currencySymbol}${totalLoanCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </div>
                     <div class="payment-item">
                         <span>Interest vs Principal:</span>
                         <span>${((totalInterestPaid / totalLoanCost) * 100).toFixed(1)}% interest, ${((loanAmount / totalLoanCost) * 100).toFixed(1)}% principal</span>
                     </div>
-                ${extraPaymentResults ? `
-                <div class="payment-breakdown" style="border-top: 2px solid #e5e7eb; margin-top: 15px; padding-top: 15px;">
-                    <h4>With $${extraPayment.toFixed(2)} Extra Monthly Payment:</h4>
-                    <div class="payment-item">
-                        <span>New Payoff Time:</span>
-                        <span>${extraPaymentResults.years} years, ${extraPaymentResults.remainingMonths} months</span>
+                    ${extraPaymentResults ? `
+                    <div class="payment-item" style="border-top: 2px solid #e5e7eb; margin-top: 15px; padding-top: 15px;">
                     </div>
-                    <div class="payment-item">
-                        <span>Interest Saved:</span>
-                        <span>$${extraPaymentResults.interestSaved.toFixed(2)}</span>
+                    <div class="payment-breakdown">
+                        <h4>With ${currencySymbol}${extraPayment.toFixed(2)} Extra Monthly Payment:</h4>
+                        <div class="payment-item">
+                            <span>New Payoff Time:</span>
+                            <span>${extraPaymentResults.years} years, ${extraPaymentResults.remainingMonths} months</span>
+                        </div>
+                        <div class="payment-item">
+                            <span>Interest Saved:</span>
+                            <span>${currencySymbol}${extraPaymentResults.interestSaved.toFixed(2)}</span>
+                        </div>
+                        <div class="payment-item">
+                            <span>Time Saved:</span>
+                            <span>${extraPaymentResults.timeSavedYears} years, ${extraPaymentResults.timeSavedRemainingMonths} months</span>
+                        </div>
                     </div>
-                    <div class="payment-item">
-                        <span>Time Saved:</span>
-                        <span>${extraPaymentResults.timeSavedYears} years, ${extraPaymentResults.timeSavedRemainingMonths} months</span>
-                    </div>
+                    ` : ''}
+                    ${percentageHighlight}
                 </div>
-                ` : ''}
-                ${percentageHighlight}
             `;
             
             showResult(resultMessage + breakdown, resultClass, resultIcon);
@@ -1295,27 +1559,27 @@ gtag('config', 'G-25TWGT6LCN');
 Generated: ${calc.timestamp.toLocaleString()}
 
 INPUTS:
-House Price: $${calc.inputs.housePrice.toLocaleString()}
-Annual Income: $${calc.inputs.annualIncome.toLocaleString()}
-Down Payment: $${calc.inputs.downPayment.toLocaleString()}
+House Price: ${currencySymbol}${calc.inputs.housePrice.toLocaleString()}
+Annual Income: ${currencySymbol}${calc.inputs.annualIncome.toLocaleString()}
+Down Payment: ${currencySymbol}${calc.inputs.downPayment.toLocaleString()}
 Credit Score: ${calc.inputs.creditScore}
 Loan Term: ${calc.inputs.loanTermYears} years
 Interest Rate: ${calc.inputs.interestRate.toFixed(2)}%
-Annual Property Tax: $${calc.inputs.annualPropertyTax.toFixed(2)}
+Annual Property Tax: ${currencySymbol}${calc.inputs.annualPropertyTax.toFixed(2)}
 Insurance Rate: ${calc.inputs.insuranceRate.toFixed(2)}%
-Monthly HOA Fees: $${(calc.inputs.hoaFees || 0).toFixed(2)}
+Monthly HOA Fees: ${currencySymbol}${(calc.inputs.hoaFees || 0).toFixed(2)}
 
 RESULTS:
-Loan Amount: $${calc.results.loanAmount.toFixed(2)}
-Monthly Mortgage: $${calc.results.monthlyMortgage.toFixed(2)}
-Total Interest Paid: $${(calc.results.totalInterestPaid || 0).toFixed(2)}
-Total Cost of Loan: $${(calc.results.totalLoanCost || 0).toFixed(2)}
+Loan Amount: ${currencySymbol}${calc.results.loanAmount.toFixed(2)}
+Monthly Mortgage: ${currencySymbol}${calc.results.monthlyMortgage.toFixed(2)}
+Total Interest Paid: ${currencySymbol}${(calc.results.totalInterestPaid || 0).toFixed(2)}
+Total Cost of Loan: ${currencySymbol}${(calc.results.totalLoanCost || 0).toFixed(2)}
 Loan Term: ${calc.inputs.loanTermYears} years
-Monthly Property Tax: $${calc.results.monthlyPropertyTax.toFixed(2)}
-Monthly Insurance: $${calc.results.monthlyInsurance.toFixed(2)}
-${calc.inputs.hoaFees > 0 ? `Monthly HOA Fees: $${calc.inputs.hoaFees.toFixed(2)}\n` : ''}Total Monthly Payment: $${calc.results.totalMonthlyPayment.toFixed(2)}
-Monthly Income: $${calc.results.monthlyIncome.toFixed(2)}
-Max Affordable Payment (28%): $${calc.results.maxAffordablePayment.toFixed(2)}
+Monthly Property Tax: ${currencySymbol}${calc.results.monthlyPropertyTax.toFixed(2)}
+Monthly Insurance: ${currencySymbol}${calc.results.monthlyInsurance.toFixed(2)}
+${calc.inputs.hoaFees > 0 ? `Monthly HOA Fees: ${currencySymbol}${calc.inputs.hoaFees.toFixed(2)}\n` : ''}Total Monthly Payment: ${currencySymbol}${calc.results.totalMonthlyPayment.toFixed(2)}
+Monthly Income: ${currencySymbol}${calc.results.monthlyIncome.toFixed(2)}
+Max Affordable Payment (28%): ${currencySymbol}${calc.results.maxAffordablePayment.toFixed(2)}
 Actual Income Percentage: ${calc.results.actualIncomePercentage.toFixed(1)}%
 Affordable: ${affordable}
 
@@ -1333,6 +1597,191 @@ Generated by Can I Afford This House Calculator`;
                 document.body.removeChild(textArea);
                 alert('Calculation results copied to clipboard!');
             });
+        }
+        
+        function calculateReverseAffordability() {
+            // Get input values for reverse calculation
+            const maxPayment = parseFormattedNumber(document.getElementById('maxPayment').value);
+            const annualIncome = parseFormattedNumber(document.getElementById('annualIncome').value);
+            const downPayment = parseFormattedNumber(document.getElementById('downPayment').value);
+            const incomeType = document.getElementById('incomeType').value;
+            
+            // Get credit score or profile
+            const creditScoreType = document.getElementById('creditScoreType').value;
+            let creditScore;
+            
+            if (creditScoreType === 'have_score') {
+                creditScore = parseInt(document.getElementById('creditScore').value);
+            } else {
+                const creditProfile = document.getElementById('creditProfile').value;
+                const profileToScore = {
+                    'excellent': 780, 'good': 720, 'fair': 650, 'poor': 620, 'no_history': 650
+                };
+                creditScore = profileToScore[creditProfile] || 650;
+            }
+            
+            // Validate required inputs
+            if (!maxPayment || !annualIncome || !downPayment) {
+                showResult('Please fill in all required fields for reverse calculation.', 'warning', '⚠️');
+                return;
+            }
+            
+            // Calculate effective income
+            let effectiveIncome = annualIncome;
+            if (incomeType === 'net') {
+                effectiveIncome = annualIncome / 0.75;
+            }
+            
+            // Get interest rate
+            const customInterestRate = parseFloat(document.getElementById('interestRate').value);
+            let interestRate;
+            if (customInterestRate && customInterestRate > 0) {
+                interestRate = customInterestRate;
+            } else {
+                if (creditScore >= 760) interestRate = 6.75;
+                else if (creditScore >= 700) interestRate = 7.25;
+                else if (creditScore >= 650) interestRate = 7.85;
+                else interestRate = 8.75;
+                
+                if (creditScoreType === 'no_score') {
+                    const creditProfile = document.getElementById('creditProfile').value;
+                    if (creditProfile === 'no_history') interestRate += 0.5;
+                    else if (creditProfile === 'poor') interestRate += 0.25;
+                }
+            }
+            
+            // Get loan term
+            const loanTermYears = parseInt(document.getElementById('loanTerm').value);
+            const monthlyRate = interestRate / 100 / 12;
+            const numberOfPayments = loanTermYears * 12;
+            
+            // Get property type and state for estimates
+            const propertyType = document.getElementById('propertyType').value;
+            const state = document.getElementById('state').value;
+            
+            // Estimate HOA and maintenance as percentages
+            let hoaFees = parseFormattedNumber(document.getElementById('hoaFees').value);
+            let maintenanceCost = parseFormattedNumber(document.getElementById('maintenanceCost').value);
+            
+            // Calculate maximum house price through iteration
+            let housePrice = 100000; // Starting point
+            let increment = 50000;
+            let bestPrice = 0;
+            
+            for (let iterations = 0; iterations < 20; iterations++) {
+                // Calculate estimated costs for this house price
+                if (!hoaFees) {
+                    hoaFees = hoaEstimates[propertyType] || 0;
+                }
+                if (!maintenanceCost) {
+                    let maintenanceRate = 0.015;
+                    if (propertyType === 'condo') maintenanceRate = 0.01;
+                    else if (propertyType === 'townhouse') maintenanceRate = 0.012;
+                    maintenanceCost = (housePrice * maintenanceRate) / 12;
+                }
+                
+                // Calculate property tax
+                const taxRate = statePropertyTaxRates[state] || 1.2;
+                const monthlyPropertyTax = (housePrice * (taxRate / 100)) / 12;
+                
+                // Calculate insurance
+                const insuranceRate = parseFloat(document.getElementById('insuranceRate').value) || 0.3;
+                const monthlyInsurance = (housePrice * (insuranceRate / 100)) / 12;
+                
+                // Calculate loan amount and mortgage payment
+                const loanAmount = housePrice - downPayment;
+                if (loanAmount <= 0) {
+                    housePrice += increment;
+                    continue;
+                }
+                
+                const monthlyMortgage = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+                
+                // Calculate total payment
+                const totalPayment = monthlyMortgage + monthlyPropertyTax + monthlyInsurance + hoaFees + maintenanceCost;
+                
+                if (totalPayment <= maxPayment) {
+                    bestPrice = housePrice;
+                    housePrice += increment;
+                } else {
+                    if (increment > 1000) {
+                        housePrice -= increment;
+                        increment = Math.floor(increment / 2);
+                        housePrice += increment;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            if (bestPrice === 0) {
+                showResult('Based on your inputs, you may need to increase your down payment or monthly budget to afford a house.', 'warning', '⚠️');
+                return;
+            }
+            
+            // Calculate final details for the best price
+            const finalLoanAmount = bestPrice - downPayment;
+            const finalMonthlyMortgage = finalLoanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+            const finalTaxRate = statePropertyTaxRates[state] || 1.2;
+            const finalMonthlyPropertyTax = (bestPrice * (finalTaxRate / 100)) / 12;
+            const finalInsuranceRate = parseFloat(document.getElementById('insuranceRate').value) || 0.3;
+            const finalMonthlyInsurance = (bestPrice * (finalInsuranceRate / 100)) / 12;
+            
+            if (!hoaFees) hoaFees = hoaEstimates[propertyType] || 0;
+            if (!maintenanceCost) {
+                let maintenanceRate = 0.015;
+                if (propertyType === 'condo') maintenanceRate = 0.01;
+                else if (propertyType === 'townhouse') maintenanceRate = 0.012;
+                maintenanceCost = (bestPrice * maintenanceRate) / 12;
+            }
+            
+            const finalTotalPayment = finalMonthlyMortgage + finalMonthlyPropertyTax + finalMonthlyInsurance + hoaFees + maintenanceCost;
+            
+            // Show results
+            const resultMessage = `
+                <strong>Maximum House Price: ${currencySymbol}${bestPrice.toLocaleString()}</strong><br><br>
+                Based on your maximum monthly payment of ${currencySymbol}${maxPayment.toLocaleString()}, you can afford a house up to ${currencySymbol}${bestPrice.toLocaleString()}.
+            `;
+            
+            const breakdown = `
+                <div class="payment-breakdown">
+                    <h4>Estimated Monthly Payment Breakdown:</h4>
+                    <div class="payment-item">
+                        <span>Mortgage Payment:</span>
+                        <span>${currencySymbol}${finalMonthlyMortgage.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Property Taxes (estimated):</span>
+                        <span>${currencySymbol}${finalMonthlyPropertyTax.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Insurance (${finalInsuranceRate.toFixed(2)}%):</span>
+                        <span>${currencySymbol}${finalMonthlyInsurance.toFixed(2)}</span>
+                    </div>
+                    ${hoaFees > 0 ? `<div class="payment-item">
+                        <span>HOA Fees (estimated):</span>
+                        <span>${currencySymbol}${hoaFees.toFixed(2)}</span>
+                    </div>` : ''}
+                    ${maintenanceCost > 0 ? `<div class="payment-item">
+                        <span>Maintenance (estimated):</span>
+                        <span>${currencySymbol}${maintenanceCost.toFixed(2)}</span>
+                    </div>` : ''}
+                    <div class="payment-item total">
+                        <span>Total Monthly Payment:</span>
+                        <span>${currencySymbol}${finalTotalPayment.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Your Budget:</span>
+                        <span>${currencySymbol}${maxPayment.toFixed(2)}</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Remaining Budget:</span>
+                        <span>${currencySymbol}${(maxPayment - finalTotalPayment).toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+            
+            showResult(resultMessage + breakdown, 'success', '🏠');
         }
         
         function clearHistory() {
