@@ -621,10 +621,9 @@ gtag('config', 'G-25TWGT6LCN');
         
         .community-guidelines li:last-child {
             margin-bottom: 0;
-        .donation-section {
+        }onation-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 60px 0;
-            margin-top: 40px;
         }
         
         .donation-card {
@@ -633,72 +632,27 @@ gtag('config', 'G-25TWGT6LCN');
             padding: 40px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .donation-card h3 {
             color: #1f2937;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             font-size: 1.5rem;
         }
         
         .donation-card p {
             color: #6b7280;
-            margin-bottom: 24px;
             line-height: 1.6;
+            margin-bottom: 30px;
         }
         
-        .share-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .share-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .share-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .feedback-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .feedback-btn:hover {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        .donation-card form {
+            margin: 30px 0;
         }
         
         .donation-note {
-            font-size: 0.9rem;
-            color: #9ca3af;
-            margin: 0;
-        }ote {
             font-size: 0.9rem;
             color: #9ca3af;
             margin-top: 20px !important;
@@ -1109,56 +1063,26 @@ gtag('config', 'G-25TWGT6LCN');
     <div class="donation-section">
         <div class="container">
             <div class="donation-card">
-                <h3>🏠 Help Others Find Clarity</h3>
-                <p>If this helped you, share it with someone house-hunting. No spam. No cost. Just clarity.</p>
-                <div class="share-buttons">
-                    <button onclick="shareResult()" class="share-btn">📤 Share This Result</button>
-                    <a href="https://github.com/Nyanguno/caniaffordthishouse/discussions" target="_blank" class="feedback-btn">💬 Feedback?</a>
-                </div>
-                <p class="donation-note">Used this? Tell me how it helped (or didn't). I read every message.</p>
+                <h3>💝 Support This Free Tool</h3>
+                <p>This calculator is completely free and helps thousands of people make informed home buying decisions. If it helped you, consider supporting its development and maintenance.</p>
+                <form action="https://www.paypal.com/donate" method="post" target="_top">
+                    <input type="hidden" name="business" value="waitherakelon@gmail.com" />
+                    <input type="hidden" name="no_recurring" value="0" />
+                    <input type="hidden" name="item_name" value="Support Can I Afford This House Calculator" />
+                    <input type="hidden" name="currency_code" value="USD" />
+                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+                </form>
+                <p class="donation-note">Every contribution helps keep this tool free for everyone! 🏠</p>
             </div>
         </div>
     </div>
     
     <div class="footer">
-        <p>&copy; 2025 Can I Afford This House? | Free House Affordability Calculator</p>
+        <p>&copy; 2024 Can I Afford This House? | Free House Affordability Calculator</p>
     </div>
     
     <script>
-        // Function to share calculation results
-        function shareResult() {
-            if (!currentCalculation) {
-                alert('Please calculate your affordability first before sharing!');
-                return;
-            }
-            
-            const currencySymbol = getCurrencySymbol();
-            const shareText = `I can afford a ${currencySymbol}${currentCalculation.housePrice.toLocaleString()} house on ${currencySymbol}${currentCalculation.annualIncome.toLocaleString()} income — check yours: https://nyanguno.github.io/caniaffordthishouse/`;
-            
-            // Try to use Web Share API if available
-            if (navigator.share) {
-                navigator.share({
-                    title: 'House Affordability Calculator Result',
-                    text: shareText,
-                    url: 'https://nyanguno.github.io/caniaffordthishouse/'
-                }).catch(err => console.log('Error sharing:', err));
-            } else {
-                // Fallback: copy to clipboard
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert('Share text copied to clipboard! Paste it anywhere to share your result.');
-                }).catch(() => {
-                    // Fallback for older browsers
-                    const textArea = document.createElement('textarea');
-                    textArea.value = shareText;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    alert('Share text copied to clipboard! Paste it anywhere to share your result.');
-                });
-            }
-        }
-        
         // Global variables for calculation history
         let calculationHistory = [];
         let currentCalculation = null;
@@ -1542,7 +1466,7 @@ gtag('config', 'G-25TWGT6LCN');
             // Calculate actual percentage of income used
             const actualIncomePercentage = (totalMonthlyPayment / monthlyIncome) * 100;
             
-            // Store current calculation for sharing
+            // Create calculation object
             currentCalculation = {
                 timestamp: new Date(),
                 inputs: {
@@ -1576,6 +1500,12 @@ gtag('config', 'G-25TWGT6LCN');
                     extraPaymentResults
                 }
             };
+            
+            // Determine affordability
+            let resultClass, resultIcon, resultMessage;
+            
+            if (totalMonthlyPayment <= maxAffordablePayment) {
+                resultClass = 'success';
                 resultIcon = '✅';
                 resultMessage = `<strong>Yes, you can afford this house!</strong><br><br>Your estimated monthly payment of ${currencySymbol}${totalMonthlyPayment.toFixed(2)} is within the recommended 28% of your ${incomeType} income.`;
             } else if (totalMonthlyPayment <= maxAffordablePayment * 1.15) {
