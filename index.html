@@ -621,9 +621,10 @@ gtag('config', 'G-25TWGT6LCN');
         
         .community-guidelines li:last-child {
             margin-bottom: 0;
-        }onation-section {
+        .donation-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 60px 0;
+            margin-top: 40px;
         }
         
         .donation-card {
@@ -632,27 +633,72 @@ gtag('config', 'G-25TWGT6LCN');
             padding: 40px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
         }
         
         .donation-card h3 {
             color: #1f2937;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-size: 1.5rem;
         }
         
         .donation-card p {
             color: #6b7280;
+            margin-bottom: 24px;
             line-height: 1.6;
-            margin-bottom: 30px;
         }
         
-        .donation-card form {
-            margin: 30px 0;
+        .share-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .feedback-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .feedback-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
         }
         
         .donation-note {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin: 0;
+        }ote {
             font-size: 0.9rem;
             color: #9ca3af;
             margin-top: 20px !important;
@@ -1063,26 +1109,137 @@ gtag('config', 'G-25TWGT6LCN');
     <div class="donation-section">
         <div class="container">
             <div class="donation-card">
-                <h3>💝 Support This Free Tool</h3>
-                <p>This calculator is completely free and helps thousands of people make informed home buying decisions. If it helped you, consider supporting its development and maintenance.</p>
-                <form action="https://www.paypal.com/donate" method="post" target="_top">
-                    <input type="hidden" name="business" value="waitherakelon@gmail.com" />
-                    <input type="hidden" name="no_recurring" value="0" />
-                    <input type="hidden" name="item_name" value="Support Can I Afford This House Calculator" />
-                    <input type="hidden" name="currency_code" value="USD" />
-                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-                    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-                </form>
-                <p class="donation-note">Every contribution helps keep this tool free for everyone! 🏠</p>
+                <h3>🏠 Help Others Find Clarity</h3>
+                <p>If this helped you, share it with someone house-hunting. No spam. No cost. Just clarity.</p>
+                <div class="share-buttons">
+                    <button onclick="shareResult()" class="share-btn">📤 Share This Result</button>
+                    <a href="https://github.com/Nyanguno/caniaffordthishouse/discussions" target="_blank" class="feedback-btn">💬 Feedback?</a>
+                </div>
+                <p class="donation-note">Used this? Tell me how it helped (or didn't). I read every message.</p>
             </div>
         </div>
     </div>
     
     <div class="footer">
-        <p>&copy; 2024 Can I Afford This House? | Free House Affordability Calculator</p>
+        <p>&copy; 2025 Can I Afford This House? | Free House Affordability Calculator</p>
     </div>
     
     <script>
+        // Function to get current currency symbol
+        function getCurrencySymbol() {
+            const currency = document.getElementById('currency').value;
+            return currencySymbols[currency] || '$';
+        }
+        
+        // Function to share calculation results
+        function shareResult() {
+            if (!currentCalculation) {
+                alert('Please calculate your affordability first before sharing!');
+                return;
+            }
+            
+            const currencySymbol = getCurrencySymbol();
+            const calc = currentCalculation;
+            const affordable = calc.results.totalMonthlyPayment <= calc.results.maxAffordablePayment ? 'YES' : 'NO';
+            const affordabilityEmoji = affordable === 'YES' ? '✅' : '⚠️';
+            
+            // Create detailed share text
+            const shareText = `🏠 House Affordability Check ${affordabilityEmoji}
+
+House Price: ${currencySymbol}${calc.inputs.housePrice.toLocaleString()}
+Annual Income: ${currencySymbol}${calc.inputs.annualIncome.toLocaleString()}
+Monthly Payment: ${currencySymbol}${calc.results.totalMonthlyPayment.toFixed(0)}
+Can I afford it? ${affordable}
+
+Check your house affordability: https://nyanguno.github.io/caniaffordthishouse`;
+
+            const shareTitle = `House Affordability Calculator Result - ${affordable}`;
+            const shareUrl = 'https://nyanguno.github.io/caniaffordthishouse';
+            
+            // Try to use Web Share API if available
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                    fallbackShare(shareText);
+                });
+            } else {
+                fallbackShare(shareText);
+            }
+        }
+        
+        // Fallback sharing function
+        function fallbackShare(shareText) {
+            // Try clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showShareSuccess('Result copied to clipboard! Paste it anywhere to share.');
+                }).catch(() => {
+                    legacyClipboardCopy(shareText);
+                });
+            } else {
+                legacyClipboardCopy(shareText);
+            }
+        }
+        
+        // Legacy clipboard copy for older browsers
+        function legacyClipboardCopy(shareText) {
+            const textArea = document.createElement('textarea');
+            textArea.value = shareText;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showShareSuccess('Result copied to clipboard! Paste it anywhere to share.');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showShareSuccess('Unable to copy automatically. Please manually copy your result from the page.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // Show share success message
+        function showShareSuccess(message) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                font-weight: 600;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 4 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+        
         // Global variables for calculation history
         let calculationHistory = [];
         let currentCalculation = null;
@@ -1186,6 +1343,15 @@ gtag('config', 'G-25TWGT6LCN');
                 });
                 // Initialize credit score inputs
                 toggleCreditScoreInputs();
+            }
+            
+            // Form submission handler
+            const affordabilityForm = document.getElementById('affordabilityForm');
+            if (affordabilityForm) {
+                affordabilityForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    calculateAffordability();
+                });
             }
         });
         
@@ -1308,11 +1474,6 @@ gtag('config', 'G-25TWGT6LCN');
                 });
             }
         }
-        
-        document.getElementById('affordabilityForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calculateAffordability();
-        });
         
         function calculateAffordability() {
             const calculatorMode = document.getElementById('calculatorMode').value;
@@ -1611,7 +1772,20 @@ gtag('config', 'G-25TWGT6LCN');
         
         function showResult(message, className, icon) {
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<span class="result-icon">${icon}</span>${message}`;
+            
+            // Add share button to the message if it's a successful calculation
+            let shareButton = '';
+            if (className === 'success' || className === 'warning') {
+                shareButton = `
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="shareResult()" class="share-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            📤 Share My Result
+                        </button>
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = `<span class="result-icon">${icon}</span>${message}${shareButton}`;
             resultDiv.className = `result ${className}`;
             resultDiv.style.display = 'block';
             
