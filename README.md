@@ -21,30 +21,6 @@ The calculator uses the widely accepted 28% rule, which suggests your monthly ho
 - Total monthly payment vs. recommended maximum
 - Debt-to-income ratio
 
-## Deployment Instructions
-
-### Option 1: GitHub Pages (Free)
-
-1. **Create a GitHub account** if you don't have one
-2. **Create a new repository** named `caniaffordthishouse`
-3. **Upload all files** from this directory to the repository
-4. **Enable GitHub Pages**:
-   - Go to repository Settings
-   - Scroll to "Pages" section
-   - Select "Deploy from a branch"
-   - Choose "main" branch and "/ (root)" folder
-   - Click Save
-5. **Your site will be available** at: `https://yourusername.github.io/caniaffordthishouse`
-
-### Option 2: Custom Domain (Optional)
-
-If you want to use a custom domain like `caniaffordthishouse.com`:
-
-1. **Buy the domain** from a registrar (Namecheap, Porkbun, etc.)
-2. **Add CNAME file** to your repository with your domain name
-3. **Configure DNS** at your registrar to point to GitHub Pages
-4. **Enable custom domain** in GitHub Pages settings
-
 ## Files Included
 
 - `index.html` - Main calculator page
