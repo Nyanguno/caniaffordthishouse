@@ -69,9 +69,6 @@ The site is optimized for these high-traffic keywords:
 - **Mobile-friendly**: 100% responsive
 - **Accessibility**: WCAG 2.1 compliant
 
-## License
-
-Free to use and modify. No attribution required.
 
 
 
